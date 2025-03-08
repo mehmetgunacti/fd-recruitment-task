@@ -599,6 +599,10 @@
           "bgColour": {
             "type": "string",
             "nullable": true
+          },
+          "tags": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
