@@ -32,7 +32,8 @@ export class TodoComponent implements OnInit {
     id: [null],
     listId: [null],
     priority: [''],
-    note: ['']
+    note: [''],
+    bgColour: [null]
   });
 
 
@@ -163,6 +164,7 @@ export class TodoComponent implements OnInit {
 
         this.selectedItem.priority = item.priority;
         this.selectedItem.note = item.note;
+        this.selectedItem.bgColour = item.bgColour;
         this.itemDetailsModalRef.hide();
         this.itemDetailsFormGroup.reset();
       },
