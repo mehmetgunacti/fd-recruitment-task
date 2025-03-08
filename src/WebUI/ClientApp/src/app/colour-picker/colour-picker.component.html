@@ -1,0 +1,17 @@
+<div class="colour-picker-container">
+
+  <div *ngFor="let c of DEFAULT_COLOURS"
+       [style.backgroundColor]="c"
+       [ngClass]="{'selected': c === colour}"
+       class="colour-picker-sample form-control"
+       (click)="selectColour(c)"
+       (keydown.Enter)="selectColour(c)"
+       tabindex="0"></div>
+  <div class="colour-picker-sample form-control ms-auto d-flex justify-content-center align-items-center"
+       (click)="selectColour(null)"
+       (keydown.Enter)="selectColour(null)"
+       tabindex="0">
+    <i class="bi bi-trash"></i>
+  </div>
+
+</div>
