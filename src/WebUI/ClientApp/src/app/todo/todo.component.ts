@@ -33,9 +33,11 @@ export class TodoComponent implements OnInit {
     listId: [null],
     priority: [''],
     note: [''],
-    bgColour: [null]
+    bgColour: [null],
+    tags: [[]]
   });
-
+  TAGS: string[] = ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'];
+  tagSuggestions = [];
 
   constructor(
     private listsClient: TodoListsClient,
@@ -263,4 +265,9 @@ export class TodoComponent implements OnInit {
     this.deleteCountDown = 0;
     this.deleting = false;
   }
+
+  onTagInput(tag: string) {
+    this.tagSuggestions = this.TAGS.filter(t => t.startsWith(tag));
+  }
+
 }
