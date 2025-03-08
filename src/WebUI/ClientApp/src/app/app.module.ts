@@ -18,6 +18,7 @@ import { ApiAuthorizationModule } from 'src/api-authorization/api-authorization.
 import { AuthorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ColourPickerComponent } from './colour-picker/colour-picker.component';
+import { TagInputComponent } from './tag-input/tag-input.component';
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import { ColourPickerComponent } from './colour-picker/colour-picker.component';
     FetchDataComponent,
     TodoComponent,
     TokenComponent,
-    ColourPickerComponent
+    ColourPickerComponent,
+    TagInputComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

@@ -1,0 +1,22 @@
+<!-- Tags -->
+<div class="d-flex align-items-center gap-1">
+
+  <span *ngFor="let tag of tags; index as idx"
+        class="badge rounded-pill bg-primary form-control"
+        (click)="removeTag(idx)"
+        (keydown.Enter)="removeTag(idx)"
+        tabindex="0">{{tag}} <i class="bi bi-x"></i>
+  </span>
+
+</div>
+<!-- Input element -->
+<input type="text"
+       class="form-control"
+       placeholder="Add a tag"
+       (keydown)="addTag($event)"
+       (input)="onInput($event)"
+       list="tag-input-suggestions"/>
+<!-- Datalist -->
+<datalist id="tag-input-suggestions">
+  <option *ngFor="let s of suggestions" [value]="s + ' '"></option>
+</datalist>

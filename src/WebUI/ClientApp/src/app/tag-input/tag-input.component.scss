@@ -1,0 +1,12 @@
+:host {
+  display: flex;
+  gap: 0.5rem;
+
+  & .tag-container {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+}
