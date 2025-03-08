@@ -1,0 +1,25 @@
+<div class="colour-picker-container">
+
+  <div class="colour-display form-control text-secondary"
+       [style.background]="colour"
+       [title]="colour">&nbsp;</div>
+  <input type="color"
+         (change)="openColorPicker($event)"
+         [value]="colour"
+         hidden
+         #colourInput>
+  <button type="button"
+          class="btn btn-primary"
+          title="Pick a colour..."
+          (click)="colourInput.click()">
+    <i class="bi bi-eyedropper"></i>
+  </button>
+  <button type="button"
+          class="btn btn-default border-0"
+          [disabled]="!colour"
+          (click)="clearColor()"
+          title="Clear">
+    <i class="bi bi-trash"></i>
+  </button>
+
+</div>

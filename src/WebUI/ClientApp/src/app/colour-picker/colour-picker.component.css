@@ -1,0 +1,13 @@
+.color-picker-container {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.color-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 6rem;
+  margin-right: auto;
+}
