@@ -14,6 +14,8 @@ public class TodoItem : BaseAuditableEntity
 
     public string? BgColour { get; set; }
 
+    public string? Tags { get; set; }
+
     private bool _done;
     public bool Done
     {
