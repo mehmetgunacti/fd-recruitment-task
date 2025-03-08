@@ -14,6 +14,9 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   ]
 })
 export class ColourPickerComponent implements ControlValueAccessor {
+
+  DEFAULT_COLOURS: string[] = ['#87cefa', '#90ee90', '#ffb6c1', '#ffa07a', '#e6e6fa', '#ffe4e1', '#afeeee', '#e6e5b0'];
+
   colour: string | null = null;
 
   private onChange = (colour: string) => { };
@@ -35,8 +38,9 @@ export class ColourPickerComponent implements ControlValueAccessor {
     // Implement if you need to handle disabled state
   }
 
-  openColourPicker(event: any): void {
-    const colour = event.target.value;
+  selectColour(selected: string | null): void {
+    // de-select on same colour click
+    const colour = selected === this.colour ? null : selected;
     this.colour = colour;
     this.onChange(colour);
     this.onTouched();

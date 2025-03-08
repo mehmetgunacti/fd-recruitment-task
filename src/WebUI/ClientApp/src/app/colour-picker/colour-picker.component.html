@@ -1,25 +1,17 @@
 <div class="colour-picker-container">
 
-  <div class="colour-display form-control text-secondary"
-       [style.background]="colour"
-       [title]="colour">&nbsp;</div>
-  <input type="color"
-         (change)="openColourPicker($event)"
-         [value]="colour"
-         hidden
-         #colourInput>
-  <button type="button"
-          class="btn btn-primary"
-          title="Pick a colour..."
-          (click)="colourInput.click()">
-    <i class="bi bi-eyedropper"></i>
-  </button>
-  <button type="button"
-          class="btn btn-default border-0"
-          [disabled]="!colour"
-          (click)="clearColour()"
-          title="Clear">
+  <div *ngFor="let c of DEFAULT_COLOURS"
+       [style.backgroundColor]="c"
+       [ngClass]="{'selected': c === colour}"
+       class="colour-picker-sample form-control"
+       (click)="selectColour(c)"
+       (keydown.Enter)="selectColour(c)"
+       tabindex="0"></div>
+  <div class="colour-picker-sample form-control ms-auto d-flex justify-content-center align-items-center"
+       (click)="selectColour(null)"
+       (keydown.Enter)="selectColour(null)"
+       tabindex="0">
     <i class="bi bi-trash"></i>
-  </button>
+  </div>
 
 </div>
