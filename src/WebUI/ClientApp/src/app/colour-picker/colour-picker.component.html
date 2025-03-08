@@ -4,7 +4,7 @@
        [style.background]="colour"
        [title]="colour">&nbsp;</div>
   <input type="color"
-         (change)="openColorPicker($event)"
+         (change)="openColourPicker($event)"
          [value]="colour"
          hidden
          #colourInput>
@@ -17,7 +17,7 @@
   <button type="button"
           class="btn btn-default border-0"
           [disabled]="!colour"
-          (click)="clearColor()"
+          (click)="clearColour()"
           title="Clear">
     <i class="bi bi-trash"></i>
   </button>

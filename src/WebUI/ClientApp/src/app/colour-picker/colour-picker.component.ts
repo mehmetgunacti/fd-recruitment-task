@@ -4,7 +4,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 @Component({
   selector: 'app-colour-picker',
   templateUrl: './colour-picker.component.html',
-  styleUrls: ['./colour-picker.component.css'],
+  styleUrls: ['./colour-picker.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -14,16 +14,16 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   ]
 })
 export class ColourPickerComponent implements ControlValueAccessor {
-  colour: string = '';
+  colour: string | null = null;
 
   private onChange = (colour: string) => { };
   private onTouched = () => { };
 
-  writeValue(colour: string): void {
+  writeValue(colour: string | null): void {
     this.colour = colour;
   }
 
-  registerOnChange(fn: (colour: string) => void): void {
+  registerOnChange(fn: (colour: string | null) => void): void {
     this.onChange = fn;
   }
 
@@ -35,16 +35,16 @@ export class ColourPickerComponent implements ControlValueAccessor {
     // Implement if you need to handle disabled state
   }
 
-  opencolourPicker(event: any): void {
+  openColourPicker(event: any): void {
     const colour = event.target.value;
     this.colour = colour;
     this.onChange(colour);
     this.onTouched();
   }
 
-  clearcolour(): void {
-    this.colour = '';
-    this.onChange('');
+  clearColour(): void {
+    this.colour = null;
+    this.onChange(null);
     this.onTouched();
   }
 }
