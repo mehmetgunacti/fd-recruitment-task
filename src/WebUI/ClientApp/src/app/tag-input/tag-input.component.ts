@@ -15,7 +15,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 })
 export class TagInputComponent implements ControlValueAccessor {
 
-  tags: string[] = [];
+  tags = new Set<string>();
 
   @Input() suggestions: string[] = [];
 
@@ -24,8 +24,8 @@ export class TagInputComponent implements ControlValueAccessor {
   private onChange = (tags: string[]) => { };
   private onTouched = () => { };
 
-  writeValue(tags: string[]): void {
-    this.tags = tags;
+  writeValue(tags: string[] | null): void {
+    this.tags = new Set(tags ?? []);
   }
 
   registerOnChange(fn: (tags: string[]) => void): void {
@@ -49,9 +49,10 @@ export class TagInputComponent implements ControlValueAccessor {
     // note: all suggestions end with a ' '
     if (inputValue.endsWith(' ')) {
 
-      this.tags.push(target.value);
+      const t = target.value.trim();
+      this.tags.add(t);
       target.value = '';
-      this.onChange(this.tags);
+      this.onChange(Array.from(this.tags));
       this.onTouched();
 
     } else
@@ -66,19 +67,20 @@ export class TagInputComponent implements ControlValueAccessor {
 
       event.preventDefault();
       const target = event.target as HTMLInputElement;
-      this.tags.push(target.value);
+      const t = target.value.trim();
+      this.tags.add(t);
       target.value = '';
-      this.onChange(this.tags);
+      this.onChange(Array.from(this.tags));
       this.onTouched();
 
     }
 
   }
 
-  removeTag(idx: number): void {
+  removeTag(tag: string): void {
 
-    this.tags.splice(idx, 1);
-    this.onChange(this.tags);
+    this.tags.delete(tag);
+    this.onChange(Array.from(this.tags));
     this.onTouched();
 
   }

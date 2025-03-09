@@ -1,10 +1,10 @@
 <!-- Tags -->
 <div class="d-flex align-items-center gap-1">
 
-  <span *ngFor="let tag of tags; index as idx"
+  <span *ngFor="let tag of tags"
         class="badge rounded-pill bg-primary form-control"
-        (click)="removeTag(idx)"
-        (keydown.Enter)="removeTag(idx)"
+        (click)="removeTag(tag)"
+        (keydown.Enter)="removeTag(tag)"
         tabindex="0">{{tag}} <i class="bi bi-x"></i>
   </span>
 
