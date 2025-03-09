@@ -11,13 +11,13 @@
       <div class="clearfix">
         <h2 class="float-start">Lists</h2>
         <button class="btn btn-default float-end" title="New List..."
-          (click)="showNewListModal(newListModalTemplate)">
+                (click)="showNewListModal(newListModalTemplate)">
           <i class="bi bi-journal-plus"></i>
         </button>
       </div>
       <ul class="list-group">
         <li *ngFor="let list of lists; index as i" class="list-group-item" role="button"
-          [ngClass]="{ 'active': selectedList == list }" (click)="selectList(list)">
+            [ngClass]="{ 'active': selectedList == list }" (click)="selectList(list)">
           <div class="clearfix">
             <div class="float-start">
               {{ list.title }}
@@ -41,10 +41,10 @@
       <div *ngIf="TAGS.length > 0" class="d-flex align-items-center justify-content-start gap-1 form-group">
 
         <i class="bi bi-tags-fill"></i>
-        <span *ngFor="let tag of TAGS; index as idx"
+        <span *ngFor="let tag of TAGS"
               class="badge rounded-pill bg-primary form-control w-auto"
-              (click)="selectTag(idx)"
-              (keydown.Enter)="selectTag(idx)"
+              (click)="selectTag(tag)"
+              (keydown.Enter)="selectTag(tag)"
               role="button"
               tabindex="0">
           {{tag}}
@@ -98,7 +98,7 @@
     <div class="form-group">
       <label for="inputListTitle">Title</label>
       <input type="text" class="form-control" id="inputListTitle" placeholder="List name..."
-        [(ngModel)]="listOptionsEditor.title" (keyup.enter)="updateListOptions()" />
+             [(ngModel)]="listOptionsEditor.title" (keyup.enter)="updateListOptions()" />
     </div>
     <div *ngIf="debug">
       <pre>{{ listOptionsEditor | json }}</pre>
@@ -202,7 +202,7 @@
     <div class="form-group">
       <label for="title">Title</label>
       <input type="text" class="form-control" id="title" placeholder="List title..." [(ngModel)]="newListEditor.title"
-        [ngClass]="{ 'is-invalid': newListEditor.error }" (keyup.enter)="addList()" />
+             [ngClass]="{ 'is-invalid': newListEditor.error }" (keyup.enter)="addList()" />
       <div *ngIf="newListEditor.error" class="invalid-feedback">
         {{ newListEditor.error }}
       </div>

@@ -8,29 +8,30 @@ import {
   CreateTodoItemCommand, UpdateTodoItemDetailCommand
 } from '../web-api-client';
 
-function convertTags(items?: TodoItemDto[]): string[] {
+function reduceTags(items?: TodoItemDto[]): string[] {
 
   if (!items)
     return [];
 
   return Array.from(
     items
-      .map(item => item.tags)
-      .filter(tag => !!tag)
-      .map(tag => tag.split(','))
-      .reduce((acc, cur) => {
+      .map(item => item.tagList)
+      .filter(list => !!list)
+      .reduce(
+        (acc, cur) => {
 
-        cur.forEach(tag => acc.add(tag));
-        return acc;
+          cur.forEach(tag => acc.add(tag));
+          return acc;
 
-      }, new Set<string>())
-    );
+        },
+        new Set<string>()
+      )
+  );
 
 }
-
 function filterItems(tag: string, items?: TodoItemDto[]): TodoItemDto[] {
 
-  return items?.filter(item => item.tags?.split(',').includes(tag)) ?? [];
+  return items?.filter(item => item.tagList?.includes(tag)) ?? [];
 
 }
 
@@ -50,7 +51,7 @@ export class TodoComponent implements OnInit {
   selectedList: TodoListDto | null;
   selectedItem: TodoItemDto;
   selectedItems: TodoItemDto[];
-  selectedTagIdx: number | null = null;
+  selectedTag: string | null = null;
 
   newListEditor: any = {};
   listOptionsEditor: any = {};
@@ -93,10 +94,10 @@ export class TodoComponent implements OnInit {
 
     if (!!list) {
 
-      this.TAGS = convertTags(list.items);
+      this.TAGS = reduceTags(list.items);
       this.selectedList = list;
       this.selectedItems = list.items ?? [];
-      this.selectedTagIdx = null;
+      this.selectedTag = null;
 
     } else
       this.selectedList = null;
@@ -182,15 +183,14 @@ export class TodoComponent implements OnInit {
   }
 
   // Items
+  selectTag(tag: string): void {
 
-  selectTag(idx: number): void {
-
-    if (this.selectedTagIdx === idx) { // unselect if tag is clicked twice
-      this.selectedTagIdx = null;
+    if (this.selectedTag === tag) { // unselect if tag is clicked twice
+      this.selectedTag = null;
       this.selectedItems = this.selectedList?.items ?? [];
     } else {
-      this.selectedTagIdx = idx;
-      this.selectedItems = filterItems(this.TAGS[idx], this.selectedList?.items);
+      this.selectedTag = tag;
+      this.selectedItems = filterItems(tag, this.selectedList?.items);
     }
 
   }
@@ -201,7 +201,7 @@ export class TodoComponent implements OnInit {
 
     this.itemDetailsModalRef = this.modalService.show(template);
     this.itemDetailsModalRef.onHidden.subscribe(() => {
-        this.stopDeleteCountDown();
+      this.stopDeleteCountDown();
     });
   }
 

@@ -495,9 +495,11 @@
             "type": "string",
             "nullable": true
           },
-          "tags": {
-            "type": "string",
-            "nullable": true
+          "tagList": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
@@ -604,9 +606,11 @@
             "type": "string",
             "nullable": true
           },
-          "tags": {
-            "type": "string",
-            "nullable": true
+          "tagList": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
