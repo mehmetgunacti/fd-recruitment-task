@@ -217,10 +217,11 @@ export class TodoComponent implements OnInit {
           this.selectedItem.listId = item.listId;
           this.lists[listIndex].items.push(this.selectedItem);
         }
-
         this.selectedItem.priority = item.priority;
         this.selectedItem.note = item.note;
         this.selectedItem.bgColour = item.bgColour;
+        this.selectedItem.tagList = item.tagList;
+        this.selectedListAllTags = reduceTags(this.selectedList.items);
         this.itemDetailsModalRef.hide();
         this.itemDetailsFormGroup.reset();
       },
