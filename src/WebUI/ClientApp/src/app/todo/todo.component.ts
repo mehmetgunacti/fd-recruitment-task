@@ -13,20 +13,13 @@ function reduceTags(items?: TodoItemDto[]): string[] {
   if (!items)
     return [];
 
-  return Array.from(
+  const uniqueTags = new Set<string>(
     items
-      .map(item => item.tagList)
-      .filter(list => !!list)
-      .reduce(
-        (acc, cur) => {
-
-          cur.forEach(tag => acc.add(tag));
-          return acc;
-
-        },
-        new Set<string>()
-      )
+      .map(item => item.tagList || [])
+      .reduce((acc, cur) => acc.concat(cur), [])
   );
+
+  return Array.from(uniqueTags);
 
 }
 function filterItems(tag: string, items?: TodoItemDto[]): TodoItemDto[] {
@@ -210,6 +203,7 @@ export class TodoComponent implements OnInit {
   }
 
   updateItemDetails(): void {
+
     const item = new UpdateTodoItemDetailCommand(this.itemDetailsFormGroup.value);
     this.itemsClient.updateItemDetails(this.selectedItem.id, item).subscribe(
       () => {
@@ -232,6 +226,7 @@ export class TodoComponent implements OnInit {
       },
       error => console.error(error)
     );
+
   }
 
   addItem() {
