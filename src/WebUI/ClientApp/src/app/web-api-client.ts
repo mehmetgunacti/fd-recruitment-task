@@ -855,6 +855,7 @@ export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand
     priority?: PriorityLevel;
     note?: string | undefined;
     bgColour?: string | undefined;
+    tags?: string | undefined;
 
     constructor(data?: IUpdateTodoItemDetailCommand) {
         if (data) {
@@ -872,6 +873,7 @@ export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand
             this.priority = _data["priority"];
             this.note = _data["note"];
             this.bgColour = _data["bgColour"];
+            this.tags = _data["tags"];
         }
     }
 
@@ -889,6 +891,7 @@ export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand
         data["priority"] = this.priority;
         data["note"] = this.note;
         data["bgColour"] = this.bgColour;
+        data["tags"] = this.tags;
         return data;
     }
 }
@@ -899,6 +902,7 @@ export interface IUpdateTodoItemDetailCommand {
     priority?: PriorityLevel;
     note?: string | undefined;
     bgColour?: string | undefined;
+    tags?: string | undefined;
 }
 
 export enum PriorityLevel {
