@@ -49,8 +49,11 @@ export class TodoComponent implements OnInit {
   priorityLevels: PriorityLevelDto[];
 
   selectedList: TodoListDto | null;
+  selectedListAllTags: string[] = [];
+
   selectedItem: TodoItemDto;
   selectedItems: TodoItemDto[];
+
   selectedTag: string | null = null;
 
   newListEditor: any = {};
@@ -68,7 +71,6 @@ export class TodoComponent implements OnInit {
     tags: [[]]
   });
 
-  TAGS: string[] = [];
   tagSuggestions = [];
 
   constructor(
@@ -94,7 +96,7 @@ export class TodoComponent implements OnInit {
 
     if (!!list) {
 
-      this.TAGS = reduceTags(list.items);
+      this.selectedListAllTags = reduceTags(list.items);
       this.selectedList = list;
       this.selectedItems = list.items ?? [];
       this.selectedTag = null;
@@ -323,7 +325,7 @@ export class TodoComponent implements OnInit {
   }
 
   onTagInput(tag: string) {
-    this.tagSuggestions = this.TAGS.filter(t => t.startsWith(tag));
+    this.tagSuggestions = this.selectedListAllTags.filter(t => t.startsWith(tag));
   }
 
 }

@@ -38,11 +38,13 @@
         </button>
       </div>
       <!-- Tags -->
-      <div *ngIf="TAGS.length > 0" class="d-flex align-items-center justify-content-start gap-1 form-group">
+      <div *ngIf="selectedListAllTags.length > 0" class="d-flex align-items-center justify-content-start gap-1 form-group">
 
         <i class="bi bi-tags-fill"></i>
-        <span *ngFor="let tag of TAGS"
-              class="badge rounded-pill bg-primary form-control w-auto"
+        <span *ngFor="let tag of selectedListAllTags"
+              class="badge rounded-pill form-control w-auto"
+              [class.bg-secondary]="selectedTag !== null && selectedTag !== tag"
+              [class.bg-primary]="selectedTag === null || selectedTag === tag"
               (click)="selectTag(tag)"
               (keydown.Enter)="selectTag(tag)"
               role="button"
