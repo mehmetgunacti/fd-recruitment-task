@@ -68,7 +68,7 @@ export class TodoComponent implements OnInit {
     priority: [''],
     note: [''],
     bgColour: [null],
-    tags: [[]]
+    tagList: [[]]
   });
 
   tagSuggestions = [];
@@ -198,6 +198,7 @@ export class TodoComponent implements OnInit {
   }
 
   showItemDetailsModal(template: TemplateRef<any>, item: TodoItemDto): void {
+
     this.selectedItem = item;
     this.itemDetailsFormGroup.patchValue(this.selectedItem);
 
@@ -205,6 +206,7 @@ export class TodoComponent implements OnInit {
     this.itemDetailsModalRef.onHidden.subscribe(() => {
       this.stopDeleteCountDown();
     });
+
   }
 
   updateItemDetails(): void {
