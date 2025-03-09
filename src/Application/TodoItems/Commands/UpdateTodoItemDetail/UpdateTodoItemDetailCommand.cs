@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using Todo_App.Application.Common.Exceptions;
 using Todo_App.Application.Common.Interfaces;
 using Todo_App.Domain.Entities;
@@ -15,6 +16,10 @@ public record UpdateTodoItemDetailCommand : IRequest
     public PriorityLevel Priority { get; init; }
 
     public string? Note { get; init; }
+
+    public string? BgColour { get; init; }
+
+    public string[] tagList { get; set; }
 }
 
 public class UpdateTodoItemDetailCommandHandler : IRequestHandler<UpdateTodoItemDetailCommand>
@@ -39,6 +44,8 @@ public class UpdateTodoItemDetailCommandHandler : IRequestHandler<UpdateTodoItem
         entity.ListId = request.ListId;
         entity.Priority = request.Priority;
         entity.Note = request.Note;
+        entity.BgColour = request.BgColour;
+        entity.Tags = string.Join(",", request.tagList);
 
         await _context.SaveChangesAsync(cancellationToken);
 

@@ -8,6 +8,50 @@ import {
   CreateTodoItemCommand, UpdateTodoItemDetailCommand
 } from '../web-api-client';
 
+function mostUsedTags(lists: TodoListDto[]): Record<string, number> {
+
+  const result: Record<string, number> = {};
+  lists.forEach(list => {
+
+    if (!list.items)
+      return;
+
+    list.items.forEach(item => {
+
+      if (!item.tagList)
+        return;
+
+      item.tagList.forEach(tag => {
+        result[tag] = (result[tag] || 0) + 1;
+      });
+
+    });
+
+  });
+  return result;
+
+}
+
+function reduceTags(items?: TodoItemDto[]): string[] {
+
+  if (!items)
+    return [];
+
+  const uniqueTags = new Set<string>(
+    items
+      .map(item => item.tagList || [])
+      .reduce((acc, cur) => acc.concat(cur), [])
+  );
+
+  return Array.from(uniqueTags);
+
+}
+function filterItems(tag: string, items?: TodoItemDto[]): TodoItemDto[] {
+
+  return items?.filter(item => item.tagList?.includes(tag)) ?? [];
+
+}
+
 @Component({
   selector: 'app-todo-component',
   templateUrl: './todo.component.html',
@@ -20,8 +64,17 @@ export class TodoComponent implements OnInit {
   deleteCountDownInterval: any;
   lists: TodoListDto[];
   priorityLevels: PriorityLevelDto[];
-  selectedList: TodoListDto;
+
+  selectedList: TodoListDto | null;
+  selectedListAllTags: string[] = [];
+
   selectedItem: TodoItemDto;
+  selectedItems: TodoItemDto[];
+
+  mostUsedTagsMap: Record<string, number> = {};
+  mostUsedTagsList: string[] = [];
+  selectedTag: string | null = null;
+
   newListEditor: any = {};
   listOptionsEditor: any = {};
   newListModalRef: BsModalRef;
@@ -32,9 +85,12 @@ export class TodoComponent implements OnInit {
     id: [null],
     listId: [null],
     priority: [''],
-    note: ['']
+    note: [''],
+    bgColour: [null],
+    tagList: [[]]
   });
 
+  tagSuggestions = [];
 
   constructor(
     private listsClient: TodoListsClient,
@@ -48,15 +104,29 @@ export class TodoComponent implements OnInit {
       result => {
         this.lists = result.lists;
         this.priorityLevels = result.priorityLevels;
-        if (this.lists.length) {
-          this.selectedList = this.lists[0];
-        }
+        this.selectList(this.lists[0]);
       },
       error => console.error(error)
     );
   }
 
   // Lists
+  selectList(list?: TodoListDto): void {
+
+    if (!!list) {
+
+      this.selectedListAllTags = reduceTags(list.items);
+      this.selectedList = list;
+      this.selectedItems = list.items ?? [];
+      this.selectedTag = null;
+
+    } else
+      this.selectedList = null;
+
+    this.calculateMostUsedTags();
+
+  }
+
   remainingItems(list: TodoListDto): number {
     return list.items.filter(t => !t.done).length;
   }
@@ -136,17 +206,44 @@ export class TodoComponent implements OnInit {
   }
 
   // Items
+  selectTag(tag: string): void {
+
+    if (this.selectedTag === tag) { // unselect if tag is clicked twice
+      this.selectedTag = null;
+      this.selectedItems = this.selectedList?.items ?? [];
+    } else {
+      this.selectedTag = tag;
+      this.selectedItems = filterItems(tag, this.selectedList?.items);
+    }
+
+  }
+
+  search(val: string): void {
+
+    this.selectedTag = null;
+    const term = val.trim().toLowerCase();
+    if (term.length === 0)
+      this.selectedItems = this.selectedList?.items ?? [];
+    else
+      this.selectedItems = this.selectedList?.items?.filter(item => (item.title ?? '').toLowerCase().indexOf(term) >= 0) ?? [];
+
+  }
+
   showItemDetailsModal(template: TemplateRef<any>, item: TodoItemDto): void {
+
     this.selectedItem = item;
+    this.itemDetailsFormGroup.reset();
     this.itemDetailsFormGroup.patchValue(this.selectedItem);
 
     this.itemDetailsModalRef = this.modalService.show(template);
     this.itemDetailsModalRef.onHidden.subscribe(() => {
-        this.stopDeleteCountDown();
+      this.stopDeleteCountDown();
     });
+
   }
 
   updateItemDetails(): void {
+
     const item = new UpdateTodoItemDetailCommand(this.itemDetailsFormGroup.value);
     this.itemsClient.updateItemDetails(this.selectedItem.id, item).subscribe(
       () => {
@@ -160,14 +257,18 @@ export class TodoComponent implements OnInit {
           this.selectedItem.listId = item.listId;
           this.lists[listIndex].items.push(this.selectedItem);
         }
-
         this.selectedItem.priority = item.priority;
         this.selectedItem.note = item.note;
+        this.selectedItem.bgColour = item.bgColour;
+        this.selectedItem.tagList = item.tagList;
+        this.selectedListAllTags = reduceTags(this.selectedList.items);
         this.itemDetailsModalRef.hide();
         this.itemDetailsFormGroup.reset();
+        this.calculateMostUsedTags();
       },
       error => console.error(error)
     );
+
   }
 
   addItem() {
@@ -247,13 +348,13 @@ export class TodoComponent implements OnInit {
       this.selectedList.items.splice(itemIndex, 1);
     } else {
       this.itemsClient.delete(item.id).subscribe(
-        () =>
-        (this.selectedList.items = this.selectedList.items.filter(
-          t => t.id !== item.id
-        )),
+        () => (this.selectedList.items = this.selectedList.items.filter(t => t.id !== item.id)),
         error => console.error(error)
       );
     }
+    this.selectedListAllTags = reduceTags(this.selectedList.items);
+    this.itemDetailsFormGroup.reset();
+    this.calculateMostUsedTags();
   }
 
   stopDeleteCountDown() {
@@ -261,4 +362,14 @@ export class TodoComponent implements OnInit {
     this.deleteCountDown = 0;
     this.deleting = false;
   }
+
+  onTagInput(tag: string) {
+    this.tagSuggestions = this.selectedListAllTags.filter(t => t.startsWith(tag));
+  }
+
+  private calculateMostUsedTags(): void {
+    this.mostUsedTagsMap = mostUsedTags(this.lists);
+    this.mostUsedTagsList = Object.keys(this.mostUsedTagsMap).sort((a, b) => this.mostUsedTagsMap[b] - this.mostUsedTagsMap[a]);
+  }
+
 }
