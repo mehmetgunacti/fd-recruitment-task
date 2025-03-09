@@ -28,6 +28,9 @@
           </div>
         </li>
       </ul>
+      <div class="clearfix py-2">
+        <input #searchBox type="search" (input)="search(searchBox.value)" class="form-control" placeholder="Search..." />
+      </div>
       <div class="clearfix">
         <h6 class="float-start mt-2"><i class="bi bi-trophy"></i> Most Used Tags</h6>
       </div>

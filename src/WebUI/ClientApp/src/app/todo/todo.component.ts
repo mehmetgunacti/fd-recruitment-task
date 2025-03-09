@@ -12,15 +12,21 @@ function mostUsedTags(lists: TodoListDto[]): Record<string, number> {
 
   const result: Record<string, number> = {};
   lists.forEach(list => {
-    if (!list.items) return;
+
+    if (!list.items)
+      return;
 
     list.items.forEach(item => {
-      if (!item.tagList) return;
+
+      if (!item.tagList)
+        return;
 
       item.tagList.forEach(tag => {
         result[tag] = (result[tag] || 0) + 1;
       });
+
     });
+
   });
   return result;
 
@@ -209,6 +215,17 @@ export class TodoComponent implements OnInit {
       this.selectedTag = tag;
       this.selectedItems = filterItems(tag, this.selectedList?.items);
     }
+
+  }
+
+  search(val: string): void {
+
+    this.selectedTag = null;
+    const term = val.trim().toLowerCase();
+    if (term.length === 0)
+      this.selectedItems = this.selectedList?.items ?? [];
+    else
+      this.selectedItems = this.selectedList?.items?.filter(item => (item.title ?? '').toLowerCase().indexOf(term) >= 0) ?? [];
 
   }
 
