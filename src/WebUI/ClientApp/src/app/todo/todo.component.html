@@ -38,11 +38,11 @@
         </button>
       </div>
       <!-- Tags -->
-      <div *ngIf="TAGS.length > 0" class="d-flex align-items-center justify-content-start gap-1">
+      <div *ngIf="TAGS.length > 0" class="d-flex align-items-center justify-content-start gap-1 form-group">
 
         <i class="bi bi-tags-fill"></i>
         <span *ngFor="let tag of TAGS; index as idx"
-              class="badge rounded-pill bg-primary"
+              class="badge rounded-pill bg-primary form-control w-auto"
               (click)="selectTag(idx)"
               (keydown.Enter)="selectTag(idx)"
               role="button"
@@ -51,8 +51,9 @@
         </span>
 
       </div>
+      <!-- Items -->
       <ul id="todo-items" class="list-group mb-2">
-        <li class="list-group-item" *ngFor="let item of selectedList.items; index as i" [style.backgroundColor]="item.bgColour">
+        <li class="list-group-item" *ngFor="let item of selectedItems; index as i" [style.backgroundColor]="item.bgColour">
           <div class="d-flex">
             <div class="todo-item-checkbox">
               <input type="checkbox" [(ngModel)]="item.done" (change)="updateItem(item)" />

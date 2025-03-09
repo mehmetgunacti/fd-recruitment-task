@@ -28,6 +28,12 @@ function convertTags(items?: TodoItemDto[]): string[] {
 
 }
 
+function filterItems(tag: string, items?: TodoItemDto[]): TodoItemDto[] {
+
+  return items?.filter(item => item.tags?.split(',').includes(tag)) ?? [];
+
+}
+
 @Component({
   selector: 'app-todo-component',
   templateUrl: './todo.component.html',
@@ -40,8 +46,12 @@ export class TodoComponent implements OnInit {
   deleteCountDownInterval: any;
   lists: TodoListDto[];
   priorityLevels: PriorityLevelDto[];
-  selectedList: TodoListDto;
+
+  selectedList: TodoListDto | null;
   selectedItem: TodoItemDto;
+  selectedItems: TodoItemDto[];
+  selectedTagIdx: number | null = null;
+
   newListEditor: any = {};
   listOptionsEditor: any = {};
   newListModalRef: BsModalRef;
@@ -56,6 +66,7 @@ export class TodoComponent implements OnInit {
     bgColour: [null],
     tags: [[]]
   });
+
   TAGS: string[] = [];
   tagSuggestions = [];
 
@@ -84,6 +95,8 @@ export class TodoComponent implements OnInit {
 
       this.TAGS = convertTags(list.items);
       this.selectedList = list;
+      this.selectedItems = list.items ?? [];
+      this.selectedTagIdx = null;
 
     } else
       this.selectedList = null;
@@ -172,7 +185,13 @@ export class TodoComponent implements OnInit {
 
   selectTag(idx: number): void {
 
-    console.log(idx);
+    if (this.selectedTagIdx === idx) { // unselect if tag is clicked twice
+      this.selectedTagIdx = null;
+      this.selectedItems = this.selectedList?.items ?? [];
+    } else {
+      this.selectedTagIdx = idx;
+      this.selectedItems = filterItems(this.TAGS[idx], this.selectedList?.items);
+    }
 
   }
 
