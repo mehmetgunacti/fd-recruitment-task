@@ -8,6 +8,26 @@ import {
   CreateTodoItemCommand, UpdateTodoItemDetailCommand
 } from '../web-api-client';
 
+function convertTags(items?: TodoItemDto[]): string[] {
+
+  if (!items)
+    return [];
+
+  return Array.from(
+    items
+      .map(item => item.tags)
+      .filter(tag => !!tag)
+      .map(tag => tag.split(','))
+      .reduce((acc, cur) => {
+
+        cur.forEach(tag => acc.add(tag));
+        return acc;
+
+      }, new Set<string>())
+    );
+
+}
+
 @Component({
   selector: 'app-todo-component',
   templateUrl: './todo.component.html',
@@ -36,7 +56,7 @@ export class TodoComponent implements OnInit {
     bgColour: [null],
     tags: [[]]
   });
-  TAGS: string[] = ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'];
+  TAGS: string[] = [];
   tagSuggestions = [];
 
   constructor(
@@ -51,15 +71,25 @@ export class TodoComponent implements OnInit {
       result => {
         this.lists = result.lists;
         this.priorityLevels = result.priorityLevels;
-        if (this.lists.length) {
-          this.selectedList = this.lists[0];
-        }
+        this.selectList(this.lists[0]);
       },
       error => console.error(error)
     );
   }
 
   // Lists
+  selectList(list?: TodoListDto): void {
+
+    if (!!list) {
+
+      this.TAGS = convertTags(list.items);
+      this.selectedList = list;
+
+    } else
+      this.selectedList = null;
+
+  }
+
   remainingItems(list: TodoListDto): number {
     return list.items.filter(t => !t.done).length;
   }
@@ -139,6 +169,13 @@ export class TodoComponent implements OnInit {
   }
 
   // Items
+
+  selectTag(idx: number): void {
+
+    console.log(idx);
+
+  }
+
   showItemDetailsModal(template: TemplateRef<any>, item: TodoItemDto): void {
     this.selectedItem = item;
     this.itemDetailsFormGroup.patchValue(this.selectedItem);

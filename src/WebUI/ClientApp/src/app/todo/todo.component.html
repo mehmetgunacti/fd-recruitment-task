@@ -16,8 +16,8 @@
         </button>
       </div>
       <ul class="list-group">
-        <li *ngFor="let list of lists; index as i" class="list-group-item"
-          [ngClass]="{ 'active': selectedList == list }" (click)="selectedList = list">
+        <li *ngFor="let list of lists; index as i" class="list-group-item" role="button"
+          [ngClass]="{ 'active': selectedList == list }" (click)="selectList(list)">
           <div class="clearfix">
             <div class="float-start">
               {{ list.title }}
@@ -33,9 +33,23 @@
       <div class="clearfix">
         <h2 class="float-start">{{ selectedList.title }}</h2>
         <button id="listOptions" class="btn btn-default float-end" title="List Options..."
-          (click)="showListOptionsModal(listOptionsModalTemplate)">
+                (click)="showListOptionsModal(listOptionsModalTemplate)">
           <i class="bi bi-three-dots-vertical"></i>
         </button>
+      </div>
+      <!-- Tags -->
+      <div *ngIf="TAGS.length > 0" class="d-flex align-items-center justify-content-start gap-1">
+
+        <i class="bi bi-tags-fill"></i>
+        <span *ngFor="let tag of TAGS; index as idx"
+              class="badge rounded-pill bg-primary"
+              (click)="selectTag(idx)"
+              (keydown.Enter)="selectTag(idx)"
+              role="button"
+              tabindex="0">
+          {{tag}}
+        </span>
+
       </div>
       <ul id="todo-items" class="list-group mb-2">
         <li class="list-group-item" *ngFor="let item of selectedList.items; index as i" [style.backgroundColor]="item.bgColour">
@@ -45,16 +59,16 @@
             </div>
             <div class="flex-fill">
               <input id="{{ 'itemTitle' + i }}" *ngIf="item == selectedItem" type="text"
-                class="form-control item-input-control" [(ngModel)]="item.title" (keyup.enter)="updateItem(item, true)"
-                (blur)="updateItem(item)" autofocus="autofocus" />
+                     class="form-control item-input-control" [(ngModel)]="item.title" (keyup.enter)="updateItem(item, true)"
+                     (blur)="updateItem(item)" autofocus="autofocus" />
               <div class="todo-item-title" *ngIf="item != selectedItem" [ngClass]="{ 'done-todo': item.done }"
-                (click)="editItem(item, 'itemTitle' + i)" class="form-control item-input-control">
+                   (click)="editItem(item, 'itemTitle' + i)" class="form-control item-input-control">
                 <span>{{ item.title }}</span>
               </div>
             </div>
             <div class="todo-item-commands">
               <button *ngIf="item.id != 0" (click)="showItemDetailsModal(itemDetailsModalTemplate, item)"
-                class="btn btn-default btn-xs" role="button">
+                      class="btn btn-default btn-xs" role="button">
                 <i class="bi bi-three-dots-vertical"></i>
               </button>
             </div>
