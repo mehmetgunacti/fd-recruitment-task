@@ -28,6 +28,27 @@
           </div>
         </li>
       </ul>
+      <div class="clearfix">
+        <h6 class="float-start mt-2"><i class="bi bi-trophy"></i> Most Used Tags</h6>
+      </div>
+      <div *ngIf="mostUsedTagsList.length > 0" class="d-flex flex-wrap align-items-center justify-content-start gap-1 form-group mb-1 p-2">
+
+        <span *ngFor="let tag of mostUsedTagsList"
+              class="badge rounded-pill form-control w-auto position-relative"
+              [class.bg-secondary]="selectedTag !== null && selectedTag !== tag"
+              [class.bg-primary]="selectedTag === null || selectedTag === tag"
+              (click)="selectTag(tag)"
+              (keydown.Enter)="selectTag(tag)"
+              role="button"
+              tabindex="0">
+          {{tag}}
+          <span *ngIf="mostUsedTagsMap[tag] > 1"
+                class="badge bg-info"
+                [class.bg-secondary]="selectedTag !== null && selectedTag !== tag"
+                [class.bg-info]="selectedTag === null || selectedTag === tag">{{mostUsedTagsMap[tag]}}</span>
+        </span>
+
+      </div>
     </div>
     <div class="col-sm-8" *ngIf="selectedList">
       <div class="clearfix">
@@ -38,9 +59,9 @@
         </button>
       </div>
       <!-- Tags -->
-      <div *ngIf="selectedListAllTags.length > 0" class="d-flex align-items-center justify-content-start gap-1 form-group mb-1">
+      <div *ngIf="selectedListAllTags.length > 0" class="d-flex align-items-center flex-wrap gap-1 form-group mb-1">
 
-        <i class="bi bi-tags-fill"></i>
+        <i class="bi bi-tags"></i>
         <span *ngFor="let tag of selectedListAllTags"
               class="badge rounded-pill form-control w-auto"
               [class.bg-secondary]="selectedTag !== null && selectedTag !== tag"

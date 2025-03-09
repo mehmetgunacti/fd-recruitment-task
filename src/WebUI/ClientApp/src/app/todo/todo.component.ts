@@ -8,6 +8,24 @@ import {
   CreateTodoItemCommand, UpdateTodoItemDetailCommand
 } from '../web-api-client';
 
+function mostUsedTags(lists: TodoListDto[]): Record<string, number> {
+
+  const result: Record<string, number> = {};
+  lists.forEach(list => {
+    if (!list.items) return;
+
+    list.items.forEach(item => {
+      if (!item.tagList) return;
+
+      item.tagList.forEach(tag => {
+        result[tag] = (result[tag] || 0) + 1;
+      });
+    });
+  });
+  return result;
+
+}
+
 function reduceTags(items?: TodoItemDto[]): string[] {
 
   if (!items)
@@ -47,6 +65,8 @@ export class TodoComponent implements OnInit {
   selectedItem: TodoItemDto;
   selectedItems: TodoItemDto[];
 
+  mostUsedTagsMap: Record<string, number> = {};
+  mostUsedTagsList: string[] = [];
   selectedTag: string | null = null;
 
   newListEditor: any = {};
@@ -96,6 +116,8 @@ export class TodoComponent implements OnInit {
 
     } else
       this.selectedList = null;
+
+    this.calculateMostUsedTags();
 
   }
 
@@ -193,6 +215,7 @@ export class TodoComponent implements OnInit {
   showItemDetailsModal(template: TemplateRef<any>, item: TodoItemDto): void {
 
     this.selectedItem = item;
+    this.itemDetailsFormGroup.reset();
     this.itemDetailsFormGroup.patchValue(this.selectedItem);
 
     this.itemDetailsModalRef = this.modalService.show(template);
@@ -224,6 +247,7 @@ export class TodoComponent implements OnInit {
         this.selectedListAllTags = reduceTags(this.selectedList.items);
         this.itemDetailsModalRef.hide();
         this.itemDetailsFormGroup.reset();
+        this.calculateMostUsedTags();
       },
       error => console.error(error)
     );
@@ -307,13 +331,13 @@ export class TodoComponent implements OnInit {
       this.selectedList.items.splice(itemIndex, 1);
     } else {
       this.itemsClient.delete(item.id).subscribe(
-        () =>
-        (this.selectedList.items = this.selectedList.items.filter(
-          t => t.id !== item.id
-        )),
+        () => (this.selectedList.items = this.selectedList.items.filter(t => t.id !== item.id)),
         error => console.error(error)
       );
     }
+    this.selectedListAllTags = reduceTags(this.selectedList.items);
+    this.itemDetailsFormGroup.reset();
+    this.calculateMostUsedTags();
   }
 
   stopDeleteCountDown() {
@@ -324,6 +348,11 @@ export class TodoComponent implements OnInit {
 
   onTagInput(tag: string) {
     this.tagSuggestions = this.selectedListAllTags.filter(t => t.startsWith(tag));
+  }
+
+  private calculateMostUsedTags(): void {
+    this.mostUsedTagsMap = mostUsedTags(this.lists);
+    this.mostUsedTagsList = Object.keys(this.mostUsedTagsMap).sort((a, b) => this.mostUsedTagsMap[b] - this.mostUsedTagsMap[a]);
   }
 
 }
