@@ -2,8 +2,9 @@ import { Component, OnInit } from "@angular/core";
 import { AuthorizeService } from "../../api-authorization/authorize.service";
 
 @Component({
-  selector: "app-token-component",
-  templateUrl: "./token.component.html",
+    selector: "app-token-component",
+    templateUrl: "./token.component.html",
+    standalone: false
 })
 export class TokenComponent implements OnInit {
   token: string = "";

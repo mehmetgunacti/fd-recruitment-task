@@ -53,9 +53,10 @@ function filterItems(tag: string, items?: TodoItemDto[]): TodoItemDto[] {
 }
 
 @Component({
-  selector: 'app-todo-component',
-  templateUrl: './todo.component.html',
-  styleUrls: ['./todo.component.scss']
+    selector: 'app-todo-component',
+    templateUrl: './todo.component.html',
+    styleUrls: ['./todo.component.scss'],
+    standalone: false
 })
 export class TodoComponent implements OnInit {
   debug = false;

@@ -2,16 +2,17 @@ import { Component, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: 'app-colour-picker',
-  templateUrl: './colour-picker.component.html',
-  styleUrls: ['./colour-picker.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => ColourPickerComponent),
-      multi: true
-    }
-  ]
+    selector: 'app-colour-picker',
+    templateUrl: './colour-picker.component.html',
+    styleUrls: ['./colour-picker.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => ColourPickerComponent),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 export class ColourPickerComponent implements ControlValueAccessor {
 

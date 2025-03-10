@@ -2,16 +2,17 @@ import { Component, EventEmitter, Input, Output, forwardRef } from '@angular/cor
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: 'app-tag-input',
-  templateUrl: './tag-input.component.html',
-  styleUrls: ['./tag-input.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => TagInputComponent),
-      multi: true
-    }
-  ]
+    selector: 'app-tag-input',
+    templateUrl: './tag-input.component.html',
+    styleUrls: ['./tag-input.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => TagInputComponent),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 export class TagInputComponent implements ControlValueAccessor {
 
