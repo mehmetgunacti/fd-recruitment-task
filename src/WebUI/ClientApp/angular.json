@@ -71,11 +71,11 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "Todo_App.WebUI:build:production"
+              "buildTarget": "Todo_App.WebUI:build:production"
             },
             "development": {
-              "browserTarget": "Todo_App.WebUI:build:development",
-              "proxyConfig": "proxy.conf.js"
+              "proxyConfig": "proxy.conf.js",
+              "buildTarget": "Todo_App.WebUI:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -83,7 +83,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "Todo_App.WebUI:build"
+            "buildTarget": "Todo_App.WebUI:build"
           }
         },
         "test": {
