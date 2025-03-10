@@ -2,135 +2,162 @@
 
 <p>This is a complex todo list component.</p>
 
-<p *ngIf="!lists"><em>Loading...</em></p>
+@if (!lists) {
 
-<div *ngIf="lists">
+  <p><em>Loading...</em></p>
 
-  <div class="row">
-    <div class="col-sm-4">
-      <div class="clearfix">
-        <h2 class="float-start">Lists</h2>
-        <button class="btn btn-default float-end" title="New List..."
-                (click)="showNewListModal(newListModalTemplate)">
-          <i class="bi bi-journal-plus"></i>
-        </button>
-      </div>
-      <ul class="list-group">
-        <li *ngFor="let list of lists; index as i" class="list-group-item" role="button"
-            [ngClass]="{ 'active': selectedList == list }" (click)="selectList(list)">
-          <div class="clearfix">
-            <div class="float-start">
-              {{ list.title }}
-            </div>
-            <div class="float-end text-right">
-              <span class="badge badge-light">{{ remainingItems(list) }}</span>
-            </div>
-          </div>
-        </li>
-      </ul>
-      <div class="clearfix py-2">
-        <input #searchBox type="search" (input)="search(searchBox.value)" class="form-control" placeholder="Search..." />
-      </div>
-      <div class="clearfix">
-        <h6 class="float-start mt-2"><i class="bi bi-trophy"></i> Most Used Tags</h6>
-      </div>
-      <div *ngIf="mostUsedTagsList.length > 0" class="d-flex flex-wrap align-items-center justify-content-start gap-1 form-group mb-1 p-2">
+} @else {
 
-        <span *ngFor="let tag of mostUsedTagsList"
-              class="badge rounded-pill form-control w-auto position-relative"
-              [class.bg-secondary]="selectedTag !== null && selectedTag !== tag"
-              [class.bg-primary]="selectedTag === null || selectedTag === tag"
-              (click)="selectTag(tag)"
-              (keydown.Enter)="selectTag(tag)"
-              role="button"
-              tabindex="0">
-          {{tag}}
-          <span *ngIf="mostUsedTagsMap[tag] > 1"
-                class="badge bg-info"
-                [class.bg-secondary]="selectedTag !== null && selectedTag !== tag"
-                [class.bg-info]="selectedTag === null || selectedTag === tag">{{mostUsedTagsMap[tag]}}</span>
-        </span>
+  <div>
 
-      </div>
-    </div>
-    <div class="col-sm-8" *ngIf="selectedList">
-      <div class="clearfix">
-        <h2 class="float-start">{{ selectedList.title }}</h2>
-        <button id="listOptions" class="btn btn-default float-end" title="List Options..."
-                (click)="showListOptionsModal(listOptionsModalTemplate)">
-          <i class="bi bi-three-dots-vertical"></i>
-        </button>
-      </div>
-      <!-- Tags -->
-      <div *ngIf="selectedListAllTags.length > 0" class="d-flex align-items-center flex-wrap gap-1 form-group mb-1">
-
-        <i class="bi bi-tags"></i>
-        <span *ngFor="let tag of selectedListAllTags"
-              class="badge rounded-pill form-control w-auto"
-              [class.bg-secondary]="selectedTag !== null && selectedTag !== tag"
-              [class.bg-primary]="selectedTag === null || selectedTag === tag"
-              (click)="selectTag(tag)"
-              (keydown.Enter)="selectTag(tag)"
-              role="button"
-              tabindex="0">
-          {{tag}}
-        </span>
-        <i class="bi bi-filter ms-auto"></i>
-
-      </div>
-      <!-- Items -->
-      <ul id="todo-items" class="list-group mb-2">
-        <li class="list-group-item" *ngFor="let item of selectedItems; index as i" [style.backgroundColor]="item.bgColour">
-          <div class="d-flex">
-            <div class="todo-item-checkbox">
-              <input type="checkbox" [(ngModel)]="item.done" (change)="updateItem(item)" />
-            </div>
-            <div class="flex-fill">
-              <input id="{{ 'itemTitle' + i }}" *ngIf="item == selectedItem" type="text"
-                     class="form-control item-input-control" [(ngModel)]="item.title" (keyup.enter)="updateItem(item, true)"
-                     (blur)="updateItem(item)" autofocus="autofocus" />
-              <div class="todo-item-title" *ngIf="item != selectedItem" [ngClass]="{ 'done-todo': item.done }"
-                   (click)="editItem(item, 'itemTitle' + i)" class="form-control item-input-control">
-                <span>{{ item.title }}</span>
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="clearfix">
+          <h2 class="float-start">Lists</h2>
+          <button class="btn btn-default float-end" title="New List..."
+                  (click)="showNewListModal(newListModalTemplate)">
+            <i class="bi bi-journal-plus"></i>
+          </button>
+        </div>
+        <ul class="list-group">
+          <li *ngFor="let list of lists; index as i" class="list-group-item" role="button"
+              [ngClass]="{ 'active': selectedList == list }" (click)="selectList(list)">
+            <div class="clearfix">
+              <div class="float-start">
+                {{ list.title }}
+              </div>
+              <div class="float-end text-right">
+                <span class="badge badge-light">{{ remainingItems(list) }}</span>
               </div>
             </div>
-            <div class="todo-item-commands">
-              <button *ngIf="item.id != 0" (click)="showItemDetailsModal(itemDetailsModalTemplate, item)"
-                      class="btn btn-default btn-xs" role="button">
-                <i class="bi bi-three-dots-vertical"></i>
-              </button>
+          </li>
+        </ul>
+        <div class="clearfix py-2">
+          <input #searchBox type="search" (input)="search(searchBox.value)" class="form-control" placeholder="Search..." />
+        </div>
+        <div class="clearfix">
+          <h6 class="float-start mt-2"><i class="bi bi-trophy"></i> Most Used Tags</h6>
+        </div>
+        <div *ngIf="mostUsedTagsList.length > 0" class="d-flex flex-wrap align-items-center justify-content-start gap-1 form-group mb-1 p-2">
+  
+          <span *ngFor="let tag of mostUsedTagsList"
+                class="badge rounded-pill form-control w-auto position-relative"
+                [class.bg-secondary]="selectedTag !== null && selectedTag !== tag"
+                [class.bg-primary]="selectedTag === null || selectedTag === tag"
+                (click)="selectTag(tag)"
+                (keydown.Enter)="selectTag(tag)"
+                role="button"
+                tabindex="0">
+            {{tag}}
+            <span *ngIf="mostUsedTagsMap[tag] > 1"
+                  class="badge bg-info"
+                  [class.bg-secondary]="selectedTag !== null && selectedTag !== tag"
+                  [class.bg-info]="selectedTag === null || selectedTag === tag">{{mostUsedTagsMap[tag]}}</span>
+          </span>
+  
+        </div>
+      </div>
+      <div class="col-sm-8" *ngIf="selectedList">
+        <div class="clearfix">
+          <h2 class="float-start">{{ selectedList.title }}</h2>
+          <button id="listOptions" class="btn btn-default float-end" title="List Options..."
+                  (click)="showListOptionsModal(listOptionsModalTemplate)">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+        </div>
+        <!-- Tags -->
+        <div *ngIf="selectedListAllTags.length > 0" class="d-flex align-items-center flex-wrap gap-1 form-group mb-1">
+  
+          <i class="bi bi-tags"></i>
+          <span *ngFor="let tag of selectedListAllTags"
+                class="badge rounded-pill form-control w-auto"
+                [class.bg-secondary]="selectedTag !== null && selectedTag !== tag"
+                [class.bg-primary]="selectedTag === null || selectedTag === tag"
+                (click)="selectTag(tag)"
+                (keydown.Enter)="selectTag(tag)"
+                role="button"
+                tabindex="0">
+            {{tag}}
+          </span>
+          <i class="bi bi-filter ms-auto"></i>
+  
+        </div>
+        <!-- Items -->
+        <ul id="todo-items" class="list-group mb-2">
+          <li class="list-group-item" *ngFor="let item of selectedItems; index as i" [style.backgroundColor]="item.bgColour">
+            <div class="d-flex">
+              <div class="todo-item-checkbox">
+                <input type="checkbox" [(ngModel)]="item.done" (change)="updateItem(item)" />
+              </div>
+              <div class="flex-fill">
+                <input id="{{ 'itemTitle' + i }}" *ngIf="item == selectedItem" type="text"
+                       class="form-control item-input-control" [(ngModel)]="item.title" (keyup.enter)="updateItem(item, true)"
+                       (blur)="updateItem(item)" autofocus="autofocus" />
+                <div class="todo-item-title" *ngIf="item != selectedItem" [ngClass]="{ 'done-todo': item.done }"
+                     (click)="editItem(item, 'itemTitle' + i)" class="form-control item-input-control">
+                  <span>{{ item.title }}</span>
+                </div>
+              </div>
+              <div class="todo-item-commands">
+                <button *ngIf="item.id != 0" (click)="showItemDetailsModal(itemDetailsModalTemplate, item)"
+                        class="btn btn-default btn-xs" role="button">
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+              </div>
             </div>
-          </div>
-        </li>
-        <li class="list-group-item" (click)="addItem()">
-          <button class="btn btn-default">Add Item...</button>
-        </li>
-      </ul>
+          </li>
+          <li class="list-group-item" (click)="addItem()">
+            <button class="btn btn-default">Add Item...</button>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
-</div>
 
-<div *ngIf="debug">
-  <pre>{{ lists | json }}</pre>
-</div>
+}
 
+@if (debug) {
+
+  <div>
+    <pre>{{ lists | json }}</pre>
+  </div>
+
+}
+
+<!-- LIST OPTIONS MODAL -->
 <ng-template #listOptionsModalTemplate>
+
+  <!-- MODAL HEADER -->
   <div class="modal-header">
     <h4 class="modal-title pull-left">List Options</h4>
     <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="listOptionsModalRef.hide()">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
+
+  <!-- MODAL BODY -->
   <div class="modal-body">
     <div class="form-group">
       <label for="inputListTitle">Title</label>
-      <input type="text" class="form-control" id="inputListTitle" placeholder="List name..."
-             [(ngModel)]="listOptionsEditor.title" (keyup.enter)="updateListOptions()" />
+      <input  type="text"
+              class="form-control"
+              id="inputListTitle"
+              placeholder="List name..."
+              [(ngModel)]="listOptionsEditor.title"
+              (keyup.enter)="updateListOptions()" />
     </div>
-    <div *ngIf="debug">
-      <pre>{{ listOptionsEditor | json }}</pre>
-    </div>
+
+    @if (debug) {
+
+      <div>
+        <pre>{{ listOptionsEditor | json }}</pre>
+      </div>
+
+    }
+
   </div>
+
+  <!-- MODAL FOOTER -->
   <div class="modal-footer">
     <div class="clearfix">
       <div class="float-start">
@@ -142,15 +169,21 @@
       </div>
     </div>
   </div>
+
 </ng-template>
 
+<!-- ITEM DETAILS MODAL -->
 <ng-template #itemDetailsModalTemplate>
+
+  <!-- MODAL HEADER -->
   <div class="modal-header">
     <h4 class="modal-title pull-left">Item Details</h4>
     <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="itemDetailsModalRef.hide()">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
+
+  <!-- MODAL BODY -->
   <div class="modal-body">
     <form [formGroup]="itemDetailsFormGroup" class="form">
       <div class="form-group">
@@ -184,6 +217,8 @@
       <pre>{{ itemDetailsFormGroup.value | json }}</pre>
     </div>
   </div>
+
+  <!-- MODAL FOOTER -->
   <div class="modal-footer">
     <div class="clearfix">
       <div class="float-start">
@@ -195,53 +230,93 @@
       </div>
     </div>
   </div>
+
 </ng-template>
 
+<!-- DELETE LIST MODAL -->
 <ng-template #deleteListModalTemplate>
+
+  <!-- MODAL HEADER -->
   <div class="modal-header">
     <h4 class="modal-title pull-left">Delete "{{ selectedList?.title }}"?</h4>
     <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="deleteListModalRef.hide()">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
+
+  <!-- MODAL BODY -->
   <div class="modal-body">
     <p>All items will be permanently deleted. </p>
-    <div *ngIf="debug">
-      <pre>{{ selectedList | json }}</pre>
-    </div>
+
+    @if (debug) {
+
+      <div>
+        <pre>{{ selectedList | json }}</pre>
+      </div>
+
+    }
+
   </div>
+
+  <!-- MODAL FOOTER -->
   <div class="modal-footer clearfix">
     <div class="float-end">
       <button type="button" class="btn btn-default" (click)="deleteListModalRef.hide()">Cancel</button>
       <button type="button" class="btn btn-danger" (click)="deleteListConfirmed()">Delete</button>
     </div>
   </div>
+
 </ng-template>
 
+<!-- NEW LIST MODAL -->
 <ng-template #newListModalTemplate>
+
+  <!-- MODAL HEADER -->
   <div class="modal-header">
     <h4 class="modal-title pull-left">New List</h4>
     <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="newListCancelled()">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
+
+  <!-- MODAL BODY -->
   <div class="modal-body">
     <div class="form-group">
       <label for="title">Title</label>
-      <input type="text" class="form-control" id="title" placeholder="List title..." [(ngModel)]="newListEditor.title"
-             [ngClass]="{ 'is-invalid': newListEditor.error }" (keyup.enter)="addList()" />
-      <div *ngIf="newListEditor.error" class="invalid-feedback">
-        {{ newListEditor.error }}
+      <input  type="text"
+              class="form-control"
+              id="title"
+              placeholder="List title..."
+              [(ngModel)]="newListEditor.title"
+              [ngClass]="{ 'is-invalid': newListEditor.error }"
+              (keyup.enter)="addList()" />
+
+      @if (newListEditor.error) {
+
+        <div class="invalid-feedback">
+          {{ newListEditor.error }}
+        </div>
+
+      }
+
+    </div>
+
+    @if (debug) {
+
+      <div>
+        <pre>{{ newListEditor | json }}</pre>
       </div>
-    </div>
-    <div *ngIf="debug">
-      <pre>{{ newListEditor | json }}</pre>
-    </div>
+
+    }
+
   </div>
+
+  <!-- MODAL FOOTER -->
   <div class="modal-footer clearfix">
     <div class="float-end">
       <button class="btn btn-default" (click)="newListCancelled()">Cancel</button>
       <button class="btn btn-primary" (click)="addList()">Create</button>
     </div>
   </div>
+
 </ng-template>

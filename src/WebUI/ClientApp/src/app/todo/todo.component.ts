@@ -1,11 +1,19 @@
-import { Component, TemplateRef, OnInit } from '@angular/core';
-import { UntypedFormBuilder } from '@angular/forms';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { CommonModule, JsonPipe } from '@angular/common';
+import { Component, OnInit, TemplateRef } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { ColourPickerComponent } from '../colour-picker/colour-picker.component';
+import { TagInputComponent } from '../tag-input/tag-input.component';
 import {
-  TodoListsClient, TodoItemsClient,
-  TodoListDto, TodoItemDto, PriorityLevelDto,
-  CreateTodoListCommand, UpdateTodoListCommand,
-  CreateTodoItemCommand, UpdateTodoItemDetailCommand
+  CreateTodoItemCommand,
+  CreateTodoListCommand,
+  PriorityLevelDto,
+  TodoItemDto,
+  TodoItemsClient,
+  TodoListDto,
+  TodoListsClient,
+  UpdateTodoItemDetailCommand,
+  UpdateTodoListCommand
 } from '../web-api-client';
 
 function mostUsedTags(lists: TodoListDto[]): Record<string, number> {
@@ -53,12 +61,13 @@ function filterItems(tag: string, items?: TodoItemDto[]): TodoItemDto[] {
 }
 
 @Component({
-    selector: 'app-todo-component',
-    templateUrl: './todo.component.html',
-    styleUrls: ['./todo.component.scss'],
-    standalone: false
+  selector: 'app-todo-component',
+  templateUrl: './todo.component.html',
+  styleUrls: ['./todo.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, JsonPipe, TagInputComponent, ColourPickerComponent]
 })
 export class TodoComponent implements OnInit {
+
   debug = false;
   deleting = false;
   deleteCountDown = 0;
