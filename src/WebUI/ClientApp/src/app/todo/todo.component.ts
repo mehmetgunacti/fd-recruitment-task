@@ -17,6 +17,7 @@ import {
 } from '../web-api-client';
 import { MostUsedTagsComponent } from './most-used-tags/most-used-tags.component';
 import { TODO_STORE, TodoStore, TodoStoreImpl } from './todo.store';
+import { ListTitlesComponent } from './list-titles/list-titles.component';
 
 function mostUsedTags(lists: TodoListDto[]): Record<string, number> {
 
@@ -67,7 +68,7 @@ function filterItems(tag: string, items?: TodoItemDto[]): TodoItemDto[] {
   templateUrl: './todo.component.html',
   styleUrls: ['./todo.component.scss'],
   providers: [{ provide: TODO_STORE, useClass: TodoStoreImpl }],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, JsonPipe, TagInputComponent, ColourPickerComponent, MostUsedTagsComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, JsonPipe, TagInputComponent, ColourPickerComponent, MostUsedTagsComponent, ListTitlesComponent]
 })
 export class TodoComponent implements OnInit {
 

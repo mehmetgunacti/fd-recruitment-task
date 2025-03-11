@@ -2,13 +2,7 @@ import { computed, InjectionToken, Signal } from '@angular/core';
 import { patchState, SignalState, signalState } from '@ngrx/signals';
 import { PriorityLevelDto, TodoItemDto, TodoListDto, TodosVm } from '../web-api-client';
 import { TagStat } from './most-used-tags/most-used-tags.component';
-
-export interface ListStat {
-
-    listId: number;
-    count: number;
-
-}
+import { ListTitle } from './list-titles/list-titles.component';
 
 interface TodoState {
 
@@ -28,6 +22,7 @@ export interface TodoStore {
 
     selectedList: Signal<TodoListDto | null>;
 
+    listTitles: Signal<ListTitle[]>;
     mostUsedTags: Signal<TagStat[]>;
 
     loading: Signal<boolean>;
@@ -53,6 +48,21 @@ export class TodoStoreImpl implements TodoStore {
     priorityLevels = this.state.priorityLevels;
     loading = this.state.loading;
     selectedList = computed(() => this.lists().find(list => list.id === this.state.selectedListId()));
+
+    listTitles = computed(() => {
+
+        const selectedListId = this.state.selectedListId();
+        const titles: ListTitle[] = this.lists().map(dto => ({
+
+            id: dto.id,
+            name: dto.title,
+            count: dto.items.filter(t => !t.done).length,
+            selected: dto.id === selectedListId
+
+        }));
+        return titles;
+
+    });
 
     mostUsedTags = computed(() => {
 

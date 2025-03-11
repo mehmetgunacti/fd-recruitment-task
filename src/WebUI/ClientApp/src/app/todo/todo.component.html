@@ -23,23 +23,7 @@
         </div>
 
         <!-- LIST TITLES -->
-        <ul class="list-group">
-
-          @for (list of store.lists(); track $index) {
-
-            <li class="list-group-item" role="button" [ngClass]="{ 'active': selectedList == list }" (click)="selectList(list)">
-              <div class="clearfix">
-                <div class="float-start">
-                  {{ list.title }}
-                </div>
-                <div class="float-end text-right">
-                  <span class="badge badge-light">{{ remainingItems(list) }}</span>
-                </div>
-              </div>
-            </li>
-
-          }
-        </ul>
+        <app-list-titles [titles]="store.listTitles()" (titleClicked)="store.selectList($event)"/>
 
         <!-- SEARCH -->
         <div class="clearfix py-2">
@@ -49,7 +33,7 @@
         <!-- MOST USED TAGS -->
         @if (mostUsedTagsList.length > 0) {
 
-          <app-most-used-tags [stats]="[{tag: 'abc', count: 3}]"/>
+          <app-most-used-tags [stats]="store.mostUsedTags()"/>
 
         }
 
