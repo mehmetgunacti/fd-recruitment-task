@@ -86,7 +86,12 @@ export class TodoStoreImpl implements TodoStore {
             });
 
         });
-        return Object.keys(result).map(tag => ({ tag, count: result[tag] } as TagStat));
+        const tagStatList: TagStat[] =
+            Object
+                .keys(result)
+                .map(tag => ({ tag, count: result[tag] }))
+                .filter(stat => stat.count > 1);
+        return tagStatList;
 
     });
 
