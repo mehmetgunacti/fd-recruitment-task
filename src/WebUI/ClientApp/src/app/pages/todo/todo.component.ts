@@ -2,8 +2,8 @@ import { CommonModule, JsonPipe } from '@angular/common';
 import { Component, inject, OnInit, TemplateRef } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { ColourPickerComponent } from '../colour-picker/colour-picker.component';
-import { TagInputComponent } from '../tag-input/tag-input.component';
+import { ColourPickerComponent } from '../../components/colour-picker/colour-picker.component';
+import { TagInputComponent } from '../../components/tag-input/tag-input.component';
 import {
   CreateTodoItemCommand,
   CreateTodoListCommand,
@@ -14,10 +14,10 @@ import {
   TodoListsClient,
   UpdateTodoItemDetailCommand,
   UpdateTodoListCommand
-} from '../web-api-client';
-import { MostUsedTagsComponent } from './most-used-tags/most-used-tags.component';
+} from '../../web-api-client';
+import { MostUsedTagsComponent } from '../../components/most-used-tags/most-used-tags.component';
 import { TODO_STORE, TodoStore, TodoStoreImpl } from './todo.store';
-import { ListTitlesComponent } from './list-titles/list-titles.component';
+import { ListTitlesComponent } from '../../components/list-titles/list-titles.component';
 
 function mostUsedTags(lists: TodoListDto[]): Record<string, number> {
 

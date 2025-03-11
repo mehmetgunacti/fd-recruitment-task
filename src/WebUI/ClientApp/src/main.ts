@@ -5,8 +5,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, Routes, withViewTransitions } from '@angular/router';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { AppComponent } from './app/app.component';
-import { HomeComponent } from './app/home/home.component';
-import { TodoComponent } from './app/todo/todo.component';
+import { HomeComponent } from './app/pages/home/home.component';
+import { TodoComponent } from './app/pages/todo/todo.component';
 
 export function getBaseUrl() {
   return document.getElementsByTagName('base')[0].href;

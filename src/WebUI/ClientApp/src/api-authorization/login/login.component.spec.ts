@@ -6,7 +6,7 @@ import { of } from 'rxjs';
 import { LoginActions } from '../api-authorization.constants';
 import { HttpParams } from '@angular/common/http';
 import { AuthorizeService } from '../authorize.service';
-import { HomeComponent } from 'src/app/home/home.component';
+import { HomeComponent } from 'src/app/pages/home/home.component';
 
 class RouterStub {
   url = '';

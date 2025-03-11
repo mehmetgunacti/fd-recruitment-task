@@ -1,8 +1,8 @@
 import { computed, InjectionToken, Signal } from '@angular/core';
 import { patchState, SignalState, signalState } from '@ngrx/signals';
-import { PriorityLevelDto, TodoItemDto, TodoListDto, TodosVm } from '../web-api-client';
-import { TagStat } from './most-used-tags/most-used-tags.component';
-import { ListTitle } from './list-titles/list-titles.component';
+import { PriorityLevelDto, TodoItemDto, TodoListDto, TodosVm } from '../../web-api-client';
+import { TagStat } from '../../components/most-used-tags/most-used-tags.component';
+import { ListTitle } from '../../components/list-titles/list-titles.component';
 
 interface TodoState {
 
