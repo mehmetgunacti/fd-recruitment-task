@@ -14,9 +14,11 @@
 
       <div class="col-sm-4">
 
-        <div class="clearfix">
-          <h2 class="float-start">Lists</h2>
-          <button class="btn btn-default float-end" title="New List..."
+        <!-- LIST TITLES SECTION HEADER -->
+        <div class="d-flex align-items-center justify-content-between">
+          <h2>Lists</h2>
+          <button class="btn btn-default"
+                  title="New List..."
                   (click)="showNewListModal(newListModalTemplate)">
             <i class="bi bi-journal-plus"></i>
           </button>
@@ -26,24 +28,22 @@
         <app-list-titles [titles]="store.listTitles()" (titleClicked)="store.selectList($event)"/>
 
         <!-- SEARCH -->
-        <div class="clearfix py-2">
+        <div class="py-2">
           <input #searchBox type="search" (input)="search(searchBox.value)" class="form-control" placeholder="Search..." />
         </div>
 
         <!-- MOST USED TAGS -->
-        @if (mostUsedTagsList.length > 0) {
-
+        <div class="py-2">
           <app-most-used-tags [stats]="store.mostUsedTags()"/>
-
-        }
+        </div>
 
       </div>
 
       @if (selectedList) {
 
         <div class="col-sm-8">
-          <div class="clearfix">
-            <h2 class="float-start">{{ selectedList.title }}</h2>
+          <div>
+            <h2>{{ selectedList.title }}</h2>
             <button id="listOptions" class="btn btn-default float-end" title="List Options..."
                     (click)="showListOptionsModal(listOptionsModalTemplate)">
               <i class="bi bi-three-dots-vertical"></i>
@@ -179,11 +179,11 @@
 
   <!-- MODAL FOOTER -->
   <div class="modal-footer">
-    <div class="clearfix">
-      <div class="float-start">
+    <div>
+      <div>
         <button class="btn btn-default text-danger" (click)="confirmDeleteList(deleteListModalTemplate)">Delete</button>
       </div>
-      <div class="float-end">
+      <div>
         <button class="btn btn-default" (click)="listOptionsModalRef.hide()">Cancel</button>
         <button class="btn btn-primary" (click)="updateListOptions()">Update</button>
       </div>
@@ -257,11 +257,11 @@
 
   <!-- MODAL FOOTER -->
   <div class="modal-footer">
-    <div class="clearfix">
-      <div class="float-start">
+    <div>
+      <div>
         <button class="btn btn-default text-danger" (click)="deleteItem(selectedItem, true)">{{deleting ? 'Deleting ' + deleteCountDown + ' ...' : 'Delete'}}</button>
       </div>
-      <div class="float-end">
+      <div>
         <button class="btn btn-default" (click)="itemDetailsModalRef.hide()">Cancel</button>
         <button class="btn btn-primary" (click)="updateItemDetails()">Update</button>
       </div>
@@ -297,7 +297,7 @@
 
   <!-- MODAL FOOTER -->
   <div class="modal-footer clearfix">
-    <div class="float-end">
+    <div>
       <button type="button" class="btn btn-default" (click)="deleteListModalRef.hide()">Cancel</button>
       <button type="button" class="btn btn-danger" (click)="deleteListConfirmed()">Delete</button>
     </div>
@@ -350,7 +350,7 @@
 
   <!-- MODAL FOOTER -->
   <div class="modal-footer clearfix">
-    <div class="float-end">
+    <div>
       <button class="btn btn-default" (click)="newListCancelled()">Cancel</button>
       <button class="btn btn-primary" (click)="addList()">Create</button>
     </div>
