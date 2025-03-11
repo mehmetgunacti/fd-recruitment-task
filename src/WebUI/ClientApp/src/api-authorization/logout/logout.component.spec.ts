@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LogoutComponent } from './logout.component';
-import { HomeComponent } from 'src/app/pages/home/home.component';
+import { HomeComponent } from 'src/app/pages/home-page/home.page';
 import { ActivatedRoute, convertToParamMap, Params, UrlSegment } from '@angular/router';
 import { LogoutActions } from '../api-authorization.constants';
 

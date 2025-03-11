@@ -5,16 +5,16 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, Routes, withViewTransitions } from '@angular/router';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { AppComponent } from './app/app.component';
-import { HomeComponent } from './app/pages/home/home.component';
-import { TodoComponent } from './app/pages/todo/todo.component';
+import { HomePage } from './app/pages/home-page/home.page';
+import { TodoPage } from './app/pages/todo-page/todo.page';
 
 export function getBaseUrl() {
   return document.getElementsByTagName('base')[0].href;
 }
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent, pathMatch: 'full' },
-  { path: 'todo', component: TodoComponent },
+  { path: '', component: HomePage, pathMatch: 'full' },
+  { path: 'todo', component: TodoPage },
 ];
 
 const appConfig: ApplicationConfig = {

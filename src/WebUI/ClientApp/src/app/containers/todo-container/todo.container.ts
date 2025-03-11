@@ -1,23 +1,13 @@
 import { CommonModule, JsonPipe } from '@angular/common';
-import { Component, inject, OnInit, TemplateRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, TemplateRef } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { ColourPickerComponent } from '../../components/colour-picker/colour-picker.component';
-import { TagInputComponent } from '../../components/tag-input/tag-input.component';
-import {
-  CreateTodoItemCommand,
-  CreateTodoListCommand,
-  PriorityLevelDto,
-  TodoItemDto,
-  TodoItemsClient,
-  TodoListDto,
-  TodoListsClient,
-  UpdateTodoItemDetailCommand,
-  UpdateTodoListCommand
-} from '../../web-api-client';
-import { MostUsedTagsComponent } from '../../components/most-used-tags/most-used-tags.component';
+import { ColourPickerComponent } from 'src/app/components/colour-picker/colour-picker.component';
+import { ListTitlesComponent } from 'src/app/components/list-titles/list-titles.component';
+import { MostUsedTagsComponent } from 'src/app/components/most-used-tags/most-used-tags.component';
+import { TagInputComponent } from 'src/app/components/tag-input/tag-input.component';
+import { CreateTodoItemCommand, CreateTodoListCommand, PriorityLevelDto, TodoItemDto, TodoItemsClient, TodoListDto, TodoListsClient, UpdateTodoItemDetailCommand, UpdateTodoListCommand } from 'src/app/web-api-client';
 import { TODO_STORE, TodoStore, TodoStoreImpl } from './todo.store';
-import { ListTitlesComponent } from '../../components/list-titles/list-titles.component';
 
 function mostUsedTags(lists: TodoListDto[]): Record<string, number> {
 
@@ -64,13 +54,14 @@ function filterItems(tag: string, items?: TodoItemDto[]): TodoItemDto[] {
 }
 
 @Component({
-  selector: 'app-todo-component',
-  templateUrl: './todo.component.html',
-  styleUrls: ['./todo.component.scss'],
+  selector: 'app-todo-container',
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, JsonPipe, TagInputComponent, ColourPickerComponent, MostUsedTagsComponent, ListTitlesComponent],
+  templateUrl: './todo.container.html',
+  styleUrl: './todo.container.scss',
   providers: [{ provide: TODO_STORE, useClass: TodoStoreImpl }],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, JsonPipe, TagInputComponent, ColourPickerComponent, MostUsedTagsComponent, ListTitlesComponent]
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TodoComponent implements OnInit {
+export class TodoContainer {
 
   debug = false;
   deleting = false;
@@ -378,5 +369,6 @@ export class TodoComponent implements OnInit {
     this.mostUsedTagsMap = mostUsedTags(this.lists);
     this.mostUsedTagsList = Object.keys(this.mostUsedTagsMap).sort((a, b) => this.mostUsedTagsMap[b] - this.mostUsedTagsMap[a]);
   }
+
 
 }
