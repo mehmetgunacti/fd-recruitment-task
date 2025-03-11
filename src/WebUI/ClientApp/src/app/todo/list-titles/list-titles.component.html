@@ -1,0 +1,20 @@
+<ul class="list-group">
+
+    @for (title of titles(); track $index) {
+
+        @let isSelected = title.selected;
+        <li class="list-group-item"
+            role="button"
+            [class.active]="isSelected"
+            (click)="titleClick(title.id)">
+            <div class="d-flex align-items-center justify-content-between">
+                <span>{{ title.name }}</span>
+                <span   class="badge"
+                        [class.bg-secondary]="!isSelected"
+                        [class.bg-info]="isSelected">{{ title.count }}</span>
+            </div>
+        </li>
+
+    }
+
+</ul>
