@@ -7,6 +7,9 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { AppComponent } from './app/app.component';
 import { HomePage } from './app/pages/home-page/home.page';
 import { TodoPage } from './app/pages/todo-page/todo.page';
+import { provideStore } from '@ngrx/store';
+import { provideEffects } from '@ngrx/effects';
+import * as store from './app/store/store.config';
 
 export function getBaseUrl() {
   return document.getElementsByTagName('base')[0].href;
@@ -24,6 +27,8 @@ const appConfig: ApplicationConfig = {
     provideHttpClient(),
     provideAnimations(),
     { provide: 'BASE_URL', useFactory: getBaseUrl, deps: [] },
+    provideStore(store.reducerList, { metaReducers: store.metaReducers }),
+		provideEffects(store.effectList),
     importProvidersFrom([ModalModule.forRoot()])
   ],
 

@@ -1,38 +1,16 @@
 import { CommonModule, JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, TemplateRef } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { Store } from '@ngrx/store';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { ColourPickerComponent } from 'src/app/components/colour-picker/colour-picker.component';
 import { ListTitlesComponent } from 'src/app/components/list-titles/list-titles.component';
 import { MostUsedTagsComponent } from 'src/app/components/most-used-tags/most-used-tags.component';
-import { TagInputComponent } from 'src/app/components/tag-input/tag-input.component';
-import { CreateTodoItemCommand, CreateTodoListCommand, PriorityLevelDto, TodoItemDto, TodoItemsClient, TodoListDto, TodoListsClient, UpdateTodoItemDetailCommand, UpdateTodoListCommand } from 'src/app/web-api-client';
-import { TODO_STORE, TodoStore, TodoStoreImpl } from './todo.store';
 import { SearchBoxComponent } from 'src/app/components/search-box/search-box.component';
-
-function mostUsedTags(lists: TodoListDto[]): Record<string, number> {
-
-  const result: Record<string, number> = {};
-  lists.forEach(list => {
-
-    if (!list.items)
-      return;
-
-    list.items.forEach(item => {
-
-      if (!item.tagList)
-        return;
-
-      item.tagList.forEach(tag => {
-        result[tag] = (result[tag] || 0) + 1;
-      });
-
-    });
-
-  });
-  return result;
-
-}
+import { TagInputComponent } from 'src/app/components/tag-input/tag-input.component';
+import { todoActions } from 'src/app/store/actions/todo.actions';
+import { selTodo_lists, selTodo_listTitles, selTodo_loading, selTodo_mostUsedTags } from 'src/app/store/selectors/todo.selectors';
+import { CreateTodoItemCommand, CreateTodoListCommand, PriorityLevelDto, TodoItemDto, TodoItemsClient, TodoListDto, TodoListsClient, UpdateTodoItemDetailCommand, UpdateTodoListCommand } from 'src/app/web-api-client';
 
 function reduceTags(items?: TodoItemDto[]): string[] {
 
@@ -59,7 +37,6 @@ function filterItems(tag: string, items?: TodoItemDto[]): TodoItemDto[] {
   imports: [CommonModule, FormsModule, ReactiveFormsModule, JsonPipe, TagInputComponent, SearchBoxComponent, ColourPickerComponent, MostUsedTagsComponent, ListTitlesComponent],
   templateUrl: './todo.container.html',
   styleUrl: './todo.container.scss',
-  providers: [{ provide: TODO_STORE, useClass: TodoStoreImpl }],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodoContainer {
@@ -68,7 +45,6 @@ export class TodoContainer {
   deleting = false;
   deleteCountDown = 0;
   deleteCountDownInterval: any;
-  lists: TodoListDto[];
   priorityLevels: PriorityLevelDto[];
 
   selectedList: TodoListDto | null;
@@ -98,7 +74,11 @@ export class TodoContainer {
 
   tagSuggestions = [];
 
-  protected store: TodoStore = inject(TODO_STORE);
+  private store: Store = inject(Store);
+  loading = this.store.selectSignal(selTodo_loading);
+  lists = this.store.selectSignal(selTodo_lists);
+  listTitles = this.store.selectSignal(selTodo_listTitles);
+  mostUsedTags = this.store.selectSignal(selTodo_mostUsedTags);
 
   constructor(
     private listsClient: TodoListsClient,
@@ -109,14 +89,27 @@ export class TodoContainer {
 
   ngOnInit(): void {
     this.listsClient.get().subscribe({
-      next: result => {
-        this.lists = result.lists;
-        this.priorityLevels = result.priorityLevels;
+      next: vm => {
+        // this.lists = vm.lists;
+        this.priorityLevels = vm.priorityLevels;
         this.selectList(this.lists[0]);
-        this.store.initState(result);
+        this.store.dispatch(todoActions.initLists({ vm }));
       },
       error: error => console.error(error)
     });
+
+  }
+
+  onSearch(searchTerm: string): void {
+
+    this.store.dispatch(todoActions.search({ searchTerm }));
+
+  }
+
+  onSelectList(id: number): void {
+
+    this.store.dispatch(todoActions.selectList({ id }));
+
   }
 
   // Lists
@@ -131,8 +124,6 @@ export class TodoContainer {
 
     } else
       this.selectedList = null;
-
-    this.calculateMostUsedTags();
 
   }
 
@@ -160,7 +151,7 @@ export class TodoContainer {
     this.listsClient.create(list as CreateTodoListCommand).subscribe(
       result => {
         list.id = result;
-        this.lists.push(list);
+        // this.lists.push(list);
         this.selectedList = list;
         this.newListModalRef.hide();
         this.newListEditor = {};
@@ -207,7 +198,7 @@ export class TodoContainer {
     this.listsClient.delete(this.selectedList.id).subscribe(
       () => {
         this.deleteListModalRef.hide();
-        this.lists = this.lists.filter(t => t.id !== this.selectedList.id);
+        // this.lists = this.lists.filter(t => t.id !== this.selectedList.id);
         this.selectedList = this.lists.length ? this.lists[0] : null;
       },
       error => console.error(error)
@@ -250,7 +241,7 @@ export class TodoContainer {
           this.selectedList.items = this.selectedList.items.filter(
             i => i.id !== this.selectedItem.id
           );
-          const listIndex = this.lists.findIndex(
+          const listIndex = this.lists().findIndex(
             l => l.id === item.listId
           );
           this.selectedItem.listId = item.listId;
@@ -263,7 +254,6 @@ export class TodoContainer {
         this.selectedListAllTags = reduceTags(this.selectedList.items);
         this.itemDetailsModalRef.hide();
         this.itemDetailsFormGroup.reset();
-        this.calculateMostUsedTags();
       },
       error => console.error(error)
     );
@@ -353,7 +343,6 @@ export class TodoContainer {
     }
     this.selectedListAllTags = reduceTags(this.selectedList.items);
     this.itemDetailsFormGroup.reset();
-    this.calculateMostUsedTags();
   }
 
   stopDeleteCountDown() {
@@ -365,11 +354,5 @@ export class TodoContainer {
   onTagInput(tag: string) {
     this.tagSuggestions = this.selectedListAllTags.filter(t => t.startsWith(tag));
   }
-
-  private calculateMostUsedTags(): void {
-    this.mostUsedTagsMap = mostUsedTags(this.lists);
-    this.mostUsedTagsList = Object.keys(this.mostUsedTagsMap).sort((a, b) => this.mostUsedTagsMap[b] - this.mostUsedTagsMap[a]);
-  }
-
 
 }

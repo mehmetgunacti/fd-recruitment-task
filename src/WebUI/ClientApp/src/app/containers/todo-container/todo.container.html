@@ -2,7 +2,7 @@
 
 <p>This is a complex todo list component.</p>
 
-@if (store.loading()) {
+@if (loading()) {
 
   <p><em>Loading...</em></p>
 
@@ -23,13 +23,13 @@
         </div>
 
         <!-- LIST TITLES -->
-        <app-list-titles [titles]="store.listTitles()" (titleClicked)="store.selectList($event)"/>
+        <app-list-titles [titles]="listTitles()" (titleClicked)="onSelectList($event)"/>
 
         <!-- SEARCH -->
-        <app-search-box (search)="store.search($event)" class="d-block pt-2"/>
+        <app-search-box (search)="onSearch($event)" class="d-block pt-2"/>
 
         <!-- MOST USED TAGS -->
-        <app-most-used-tags [stats]="store.mostUsedTags()" class="d-block pt-2"/>
+        <app-most-used-tags [stats]="mostUsedTags()" class="d-block pt-2"/>
 
       </div>
 
@@ -131,7 +131,7 @@
 @if (debug) {
 
   <div>
-    <pre>{{ store.lists() | json }}</pre>
+    <pre>{{ lists() | json }}</pre>
   </div>
 
 }
@@ -202,7 +202,7 @@
         <label for="list">List</label>
         <select class="form-control" formControlName="listId">
 
-          @for (list of store.lists(); track $index) {
+          @for (list of lists(); track $index) {
 
             <option [ngValue]="list.id">{{ list.title }}</option>
 
