@@ -12,17 +12,17 @@
         @let count = stat.count;
         @let isSelected = selectedTag() !== null && tag === selectedTag();
         <span   class="badge rounded-pill form-control w-auto position-relative"
-                [class.bg-secondary]="!isSelected"
-                [class.bg-primary]="isSelected"
+                [class.bg-primary]="!isSelected"
+                [class.bg-warning]="isSelected"
                 (click)="selectTag(tag)"
                 (keydown.Enter)="selectTag(tag)"
                 role="button"
                 tabindex="0">
                 {{tag}}
 
-            <span   class="badge bg-info"
-                    [class.bg-secondary]="!isSelected"
-                    [class.bg-info]="isSelected">
+            <span   class="badge"
+                    [class.bg-info]="!isSelected"
+                    [class.bg-warning]="isSelected">
                     {{count}}
             </span>
 
