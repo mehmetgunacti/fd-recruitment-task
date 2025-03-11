@@ -8,13 +8,11 @@
 
 } @else {
 
-  <div>
-
     <div class="row">
 
       <div class="col-sm-4">
 
-        <!-- LIST TITLES SECTION HEADER -->
+        <!-- LIST TITLES HEADER -->
         <div class="d-flex align-items-center justify-content-between">
           <h2>Lists</h2>
           <button class="btn btn-default"
@@ -28,14 +26,10 @@
         <app-list-titles [titles]="store.listTitles()" (titleClicked)="store.selectList($event)"/>
 
         <!-- SEARCH -->
-        <div class="py-2">
-          <input #searchBox type="search" (input)="search(searchBox.value)" class="form-control" placeholder="Search..." />
-        </div>
+        <app-search-box (search)="store.search($event)" class="d-block pt-2"/>
 
         <!-- MOST USED TAGS -->
-        <div class="py-2">
-          <app-most-used-tags [stats]="store.mostUsedTags()"/>
-        </div>
+        <app-most-used-tags [stats]="store.mostUsedTags()" class="d-block pt-2"/>
 
       </div>
 
@@ -131,8 +125,6 @@
       }
 
     </div>
-
-  </div>
 
 }
 

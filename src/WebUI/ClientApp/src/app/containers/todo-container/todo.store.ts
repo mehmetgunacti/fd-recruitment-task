@@ -1,8 +1,8 @@
 import { computed, InjectionToken, Signal } from '@angular/core';
-import { patchState, SignalState, signalState } from '@ngrx/signals';
-import { PriorityLevelDto, TodoItemDto, TodoListDto, TodosVm } from '../../web-api-client';
-import { TagStat } from '../../components/most-used-tags/most-used-tags.component';
+import { patchState, signalState } from '@ngrx/signals';
 import { ListTitle } from '../../components/list-titles/list-titles.component';
+import { TagStat } from '../../components/most-used-tags/most-used-tags.component';
+import { PriorityLevelDto, TodoListDto, TodosVm } from '../../web-api-client';
 
 interface TodoState {
 
@@ -29,12 +29,13 @@ export interface TodoStore {
 
     initState(vm: TodosVm): void;
     selectList(id: number | null): void;
+    search(term: string | null): void;
 
 }
 
 export class TodoStoreImpl implements TodoStore {
 
-    private state: SignalState<TodoState> = signalState<TodoState>({
+    private readonly state = signalState<TodoState>({
 
         lists: [],
         priorityLevels: [],
@@ -113,6 +114,12 @@ export class TodoStoreImpl implements TodoStore {
     selectList(id: number | null): void {
 
         patchState(this.state, { selectedListId: id });
+
+    }
+
+    search(searchTerm: string | null): void {
+
+        patchState(this.state, { searchTerm });
 
     }
 

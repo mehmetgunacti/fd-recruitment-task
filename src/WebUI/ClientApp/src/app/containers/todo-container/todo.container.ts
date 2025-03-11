@@ -8,6 +8,7 @@ import { MostUsedTagsComponent } from 'src/app/components/most-used-tags/most-us
 import { TagInputComponent } from 'src/app/components/tag-input/tag-input.component';
 import { CreateTodoItemCommand, CreateTodoListCommand, PriorityLevelDto, TodoItemDto, TodoItemsClient, TodoListDto, TodoListsClient, UpdateTodoItemDetailCommand, UpdateTodoListCommand } from 'src/app/web-api-client';
 import { TODO_STORE, TodoStore, TodoStoreImpl } from './todo.store';
+import { SearchBoxComponent } from 'src/app/components/search-box/search-box.component';
 
 function mostUsedTags(lists: TodoListDto[]): Record<string, number> {
 
@@ -55,7 +56,7 @@ function filterItems(tag: string, items?: TodoItemDto[]): TodoItemDto[] {
 
 @Component({
   selector: 'app-todo-container',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, JsonPipe, TagInputComponent, ColourPickerComponent, MostUsedTagsComponent, ListTitlesComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, JsonPipe, TagInputComponent, SearchBoxComponent, ColourPickerComponent, MostUsedTagsComponent, ListTitlesComponent],
   templateUrl: './todo.container.html',
   styleUrl: './todo.container.scss',
   providers: [{ provide: TODO_STORE, useClass: TodoStoreImpl }],
