@@ -2,14 +2,18 @@
 
 <p>This is a complex todo list component.</p>
 
-@if (!lists) {
+@if (store.loading()) {
+
   <p><em>Loading...</em></p>
+
 } @else {
 
   <div>
 
     <div class="row">
+
       <div class="col-sm-4">
+
         <div class="clearfix">
           <h2 class="float-start">Lists</h2>
           <button class="btn btn-default float-end" title="New List..."
@@ -21,7 +25,7 @@
         <!-- LIST TITLES -->
         <ul class="list-group">
 
-          @for (list of lists; track $index) {
+          @for (list of store.lists(); track $index) {
 
             <li class="list-group-item" role="button" [ngClass]="{ 'active': selectedList == list }" (click)="selectList(list)">
               <div class="clearfix">
@@ -43,37 +47,12 @@
         </div>
 
         <!-- MOST USED TAGS -->
-        <div class="clearfix">
-          <h6 class="float-start mt-2"><i class="bi bi-trophy"></i> Most Used Tags</h6>
-        </div>
-
         @if (mostUsedTagsList.length > 0) {
-        <div class="d-flex flex-wrap align-items-center justify-content-start gap-1 form-group mb-1 p-2">
 
-          @for (tag of mostUsedTagsList; track $index) {
+          <app-most-used-tags [stats]="[{tag: 'abc', count: 3}]"/>
 
-            <span class="badge rounded-pill form-control w-auto position-relative"
-                  [class.bg-secondary]="selectedTag !== null && selectedTag !== tag"
-                  [class.bg-primary]="selectedTag === null || selectedTag === tag"
-                  (click)="selectTag(tag)"
-                  (keydown.Enter)="selectTag(tag)"
-                  role="button"
-                  tabindex="0">
-              {{tag}}
+        }
 
-              @if (mostUsedTagsMap[tag] > 1) {
-                <span class="badge bg-info"
-                      [class.bg-secondary]="selectedTag !== null && selectedTag !== tag"
-                      [class.bg-info]="selectedTag === null || selectedTag === tag">{{mostUsedTagsMap[tag]}}</span>
-              }
-
-            </span>
-
-          }
-  
-        </div>
-
-      }
       </div>
 
       @if (selectedList) {
@@ -109,6 +88,7 @@
             </div>
 
           }
+
           <!-- Items -->
           <ul id="todo-items" class="list-group mb-2">
 
@@ -165,7 +145,9 @@
         </div>
 
       }
+
     </div>
+
   </div>
 
 }
@@ -173,7 +155,7 @@
 @if (debug) {
 
   <div>
-    <pre>{{ lists | json }}</pre>
+    <pre>{{ store.lists() | json }}</pre>
   </div>
 
 }
@@ -244,7 +226,7 @@
         <label for="list">List</label>
         <select class="form-control" formControlName="listId">
 
-          @for (list of lists; track $index) {
+          @for (list of store.lists(); track $index) {
 
             <option [ngValue]="list.id">{{ list.title }}</option>
 

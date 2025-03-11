@@ -1,5 +1,5 @@
 import { CommonModule, JsonPipe } from '@angular/common';
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, inject, OnInit, TemplateRef } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { ColourPickerComponent } from '../colour-picker/colour-picker.component';
@@ -15,6 +15,8 @@ import {
   UpdateTodoItemDetailCommand,
   UpdateTodoListCommand
 } from '../web-api-client';
+import { MostUsedTagsComponent } from './most-used-tags/most-used-tags.component';
+import { TODO_STORE, TodoStore, TodoStoreImpl } from './todo.store';
 
 function mostUsedTags(lists: TodoListDto[]): Record<string, number> {
 
@@ -64,7 +66,8 @@ function filterItems(tag: string, items?: TodoItemDto[]): TodoItemDto[] {
   selector: 'app-todo-component',
   templateUrl: './todo.component.html',
   styleUrls: ['./todo.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, JsonPipe, TagInputComponent, ColourPickerComponent]
+  providers: [{ provide: TODO_STORE, useClass: TodoStoreImpl }],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, JsonPipe, TagInputComponent, ColourPickerComponent, MostUsedTagsComponent]
 })
 export class TodoComponent implements OnInit {
 
@@ -102,6 +105,8 @@ export class TodoComponent implements OnInit {
 
   tagSuggestions = [];
 
+  protected store: TodoStore = inject(TODO_STORE);
+
   constructor(
     private listsClient: TodoListsClient,
     private itemsClient: TodoItemsClient,
@@ -110,14 +115,15 @@ export class TodoComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.listsClient.get().subscribe(
-      result => {
+    this.listsClient.get().subscribe({
+      next: result => {
         this.lists = result.lists;
         this.priorityLevels = result.priorityLevels;
         this.selectList(this.lists[0]);
+        this.store.initState(result);
       },
-      error => console.error(error)
-    );
+      error: error => console.error(error)
+    });
   }
 
   // Lists
@@ -216,17 +222,7 @@ export class TodoComponent implements OnInit {
   }
 
   // Items
-  selectTag(tag: string): void {
-
-    if (this.selectedTag === tag) { // unselect if tag is clicked twice
-      this.selectedTag = null;
-      this.selectedItems = this.selectedList?.items ?? [];
-    } else {
-      this.selectedTag = tag;
-      this.selectedItems = filterItems(tag, this.selectedList?.items);
-    }
-
-  }
+  selectTag(tag: string): void { }
 
   search(val: string): void {
 
