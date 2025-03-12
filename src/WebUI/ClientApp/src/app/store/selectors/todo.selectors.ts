@@ -45,7 +45,7 @@ export const selTodo_selectedList = createSelector(
 
     selTodo_lists,
     selTodo_selectedListId,
-    (lists, selectedListId) => lists.find(list => list.id === selectedListId) ?? lists.at(0)
+    (lists, selectedListId) => lists.find(list => list.id === selectedListId) ?? null
 
 );
 
