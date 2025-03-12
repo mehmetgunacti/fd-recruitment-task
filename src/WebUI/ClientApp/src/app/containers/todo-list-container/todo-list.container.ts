@@ -1,9 +1,9 @@
-import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, TemplateRef, viewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { TagInputComponent } from 'src/app/components/tag-input/tag-input.component';
+import { TodoItemComponent } from 'src/app/components/todo-item/todo-item.component';
 import { ListUpdateFormComponent } from 'src/app/forms/list-update-form/list-update-form.component';
 import { todoActions } from 'src/app/store/actions/todo.actions';
 import { selTodo_lists, selTodo_listUpdateFormVisible, selTodo_priorityLevels, selTodo_selectedList, selTodo_selectedListAllTags } from 'src/app/store/selectors/todo.selectors';
@@ -11,7 +11,7 @@ import { CreateTodoItemCommand, TodoItemDto, TodoItemsClient, TodoListsClient, U
 
 @Component({
   selector: 'app-todo-list-container',
-  imports: [FormsModule, ReactiveFormsModule, TagInputComponent, ListUpdateFormComponent, JsonPipe],
+  imports: [FormsModule, ReactiveFormsModule, TagInputComponent, ListUpdateFormComponent, TodoItemComponent],
   templateUrl: './todo-list.container.html',
   styleUrl: './todo-list.container.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -24,8 +24,7 @@ export class TodoListContainer {
   protected selectedList = this.store.selectSignal(selTodo_selectedList); // <-- empty?
   protected selectedListAllTags = this.store.selectSignal(selTodo_selectedListAllTags);
 
-  protected selectedItems = computed(() => this.selectedList().items ?? []);
-  protected selectedItem = computed(() => this.selectedItems()[0]);
+  protected selectedListItems = computed(() => this.selectedList().items ?? []);
 
   protected selectedTag = signal<string | null>(null);
 
@@ -52,22 +51,40 @@ export class TodoListContainer {
   }
 
   onUpdateList(id: number, title: string): void {
-
     this.store.dispatch(todoActions.updateList({ id, title }));
-
   }
 
   onOpenListUpdateForm(): void {
-
     this.store.dispatch(todoActions.openListUpdateForm());
-
   }
 
   onCloseListUpdateForm(): void {
-
     this.store.dispatch(todoActions.closeListUpdateForm());
-
   }
+
+  protected onItemStateChanged({ id, newState }: { id: number, newState: boolean }): void {
+    console.log(id, newState, 'stateChange');
+  }
+
+  protected onItemTitleChanged({ id, newTitle }: { id: number, newTitle: string }): void {
+    console.log(id, newTitle, 'titleChange');
+  }
+
+  protected onItemEdit(id: number): void {
+    console.log(id, 'edit');
+  }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   private fb = inject(UntypedFormBuilder);
@@ -109,7 +126,7 @@ export class TodoListContainer {
     const isNewItem = item.id === 0;
 
     if (!item.title.trim()) {
-      this.deleteItem(item);
+      // this.deleteItem(item);
       return;
     }
 
@@ -131,7 +148,7 @@ export class TodoListContainer {
       );
     }
 
-    this.selectedItem = null;
+    // this.selectedItem = null;
 
     if (isNewItem && pressedEnter) {
       setTimeout(() => this.addItem(), 250);
@@ -147,7 +164,7 @@ export class TodoListContainer {
 
     // this.selectedItem = item;
     this.itemDetailsFormGroup.reset();
-    this.itemDetailsFormGroup.patchValue(this.selectedItem);
+    // this.itemDetailsFormGroup.patchValue(this.selectedItem);
 
     this.itemDetailsModalRef = this.modalService.show(template);
     this.itemDetailsModalRef.onHidden.subscribe(() => {
@@ -193,33 +210,34 @@ export class TodoListContainer {
 
   updateItemDetails(): void {
 
-    const item = new UpdateTodoItemDetailCommand(this.itemDetailsFormGroup.value);
-    this.itemsClient.updateItemDetails(this.selectedItem().id, item).subscribe(
-      () => {
-        if (this.selectedItem().listId !== item.listId) {
-          this.selectedList().items = this.selectedList().items.filter(
-            i => i.id !== this.selectedItem().id
-          );
-          const listIndex = this.lists().findIndex(
-            l => l.id === item.listId
-          );
-          this.selectedItem().listId = item.listId;
-          this.lists[listIndex].items.push(this.selectedItem());
-        }
-        this.selectedItem().priority = item.priority;
-        this.selectedItem().note = item.note;
-        this.selectedItem().bgColour = item.bgColour;
-        this.selectedItem().tagList = item.tagList;
-        // this.selectedListAllTags = reduceTags(this.selectedList().items);
-        this.itemDetailsModalRef.hide();
-        this.itemDetailsFormGroup.reset();
-      },
-      error => console.error(error)
-    );
+    // const item = new UpdateTodoItemDetailCommand(this.itemDetailsFormGroup.value);
+    // this.itemsClient.updateItemDetails(this.selectedItem().id, item).subscribe(
+    //   () => {
+    //     if (this.selectedItem().listId !== item.listId) {
+    //       this.selectedList().items = this.selectedList().items.filter(
+    //         i => i.id !== this.selectedItem().id
+    //       );
+    //       const listIndex = this.lists().findIndex(
+    //         l => l.id === item.listId
+    //       );
+    //       this.selectedItem().listId = item.listId;
+    //       this.lists[listIndex].items.push(this.selectedItem());
+    //     }
+    //     this.selectedItem().priority = item.priority;
+    //     this.selectedItem().note = item.note;
+    //     this.selectedItem().bgColour = item.bgColour;
+    //     this.selectedItem().tagList = item.tagList;
+    //     // this.selectedListAllTags = reduceTags(this.selectedList().items);
+    //     this.itemDetailsModalRef.hide();
+    //     this.itemDetailsFormGroup.reset();
+    //   },
+    //   error => console.error(error)
+    // );
 
   }
 
-  deleteItem(item: TodoItemDto, countDown?: boolean) {
+  deleteItem(id: number, countDown?:boolean) { //item: TodoItemDto, countDown?: boolean) {
+    const item = {} as TodoItemDto;
     if (countDown) {
       if (this.deleting) {
         // this.stopDeleteCountDown();
@@ -229,7 +247,7 @@ export class TodoListContainer {
       this.deleting = true;
       this.deleteCountDownInterval = setInterval(() => {
         if (this.deleting && --this.deleteCountDown <= 0) {
-          this.deleteItem(item, false);
+          // this.deleteItem(item, false);
         }
       }, 1000);
       return;
@@ -240,8 +258,8 @@ export class TodoListContainer {
     }
 
     if (item.id === 0) {
-      const itemIndex = this.selectedList().items.indexOf(this.selectedItem());
-      this.selectedList().items.splice(itemIndex, 1);
+      //const itemIndex = this.selectedList().items.indexOf(this.selectedItem());
+      //this.selectedList().items.splice(itemIndex, 1);
     } else {
       this.itemsClient.delete(item.id).subscribe(
         () => (this.selectedList().items = this.selectedList().items.filter(t => t.id !== item.id)),

@@ -34,50 +34,15 @@
 <!-- Items -->
 <ul id="todo-items" class="list-group mb-2">
 
-  @for(item of selectedItems(); track $index) {
+  @for(item of selectedListItems(); track $index) {
 
     <li class="list-group-item" [style.backgroundColor]="item.bgColour">
-      <div class="d-flex">
-        <div class="todo-item-checkbox">
-          <input type="checkbox" [(ngModel)]="item.done" (change)="updateItem(item)" />
-        </div>
-        <div class="flex-fill">
 
-          <!-- todo selectedItem() ?? -->
-          @if (item === selectedItem()) { 
-            <input  id="{{ 'itemTitle' + $index }}"
-                    type="text"
-                    class="form-control item-input-control"
-                    [(ngModel)]="item.title"
-                    (keyup.enter)="updateItem(item, true)"
-                    (blur)="updateItem(item)"
-                    autofocus="autofocus" />
-          } @else {
+      <app-todo-item  [item]="item"
+                      (edit)="onItemEdit($event)"
+                      (stateChanged)="onItemStateChanged($event)"
+                      (titleChanged)="onItemTitleChanged($event)" />
 
-            <div  class="todo-item-title"
-                  [class.done-todo]="item.done"
-                  (click)="editItem(item, 'itemTitle' + $index)"
-                  class="form-control item-input-control">
-                <span>{{ item.title }}</span>
-            </div>
-
-          }
-          
-        </div>
-        <div class="todo-item-commands">
-
-          @if (item.id !== 0) {
-
-            <button (click)="showItemDetailsModal(itemDetailsModalTemplate, item)"
-                    class="btn btn-default btn-xs"
-                    role="button">
-              <i class="bi bi-three-dots-vertical"></i>
-            </button>
-
-          }
-
-        </div>
-      </div>
     </li>
 
   }
@@ -156,7 +121,7 @@
   <div class="modal-footer">
     <div>
       <div>
-        <button class="btn btn-default text-danger" (click)="deleteItem(selectedItem(), true)">{{deleting ? 'Deleting ' + deleteCountDown + ' ...' : 'Delete'}}</button>
+        <button class="btn btn-default text-danger" (click)="deleteItem(0, true)">{{deleting ? 'Deleting ' + deleteCountDown + ' ...' : 'Delete'}}</button>
       </div>
       <div>
         <button class="btn btn-default" (click)="itemDetailsModalRef.hide()">Cancel</button>
