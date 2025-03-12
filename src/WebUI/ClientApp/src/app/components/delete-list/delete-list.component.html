@@ -1,0 +1,20 @@
+<!-- MODAL HEADER -->
+<div class="modal-header">
+    <h4 class="modal-title pull-left">Delete "{{ list()?.title }}"?</h4>
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="onRejected()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+</div>
+
+<!-- MODAL BODY -->
+<div class="modal-body">
+    <p>All items will be permanently deleted. </p>
+</div>
+
+<!-- MODAL FOOTER -->
+<div class="modal-footer clearfix">
+    <div>
+        <button type="button" class="btn btn-default" (click)="onRejected()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="onConfirmed()">Delete</button>
+    </div>
+</div>
