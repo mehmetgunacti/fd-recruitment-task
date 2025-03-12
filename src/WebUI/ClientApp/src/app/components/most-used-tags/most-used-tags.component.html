@@ -6,7 +6,7 @@
 <!-- TAGS -->
 <div class="d-flex flex-wrap align-items-center justify-content-start gap-1 form-group mb-1 p-2">
 
-    @for (stat of stats(); track $index) {
+    @for (stat of filteredTags(); track $index) {
 
         @let tag = stat.tag;
         @let count = stat.count;

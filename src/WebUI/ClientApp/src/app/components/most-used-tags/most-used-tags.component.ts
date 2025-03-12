@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 
 export interface TagStat {
 
@@ -22,6 +22,7 @@ export class MostUsedTagsComponent {
   tagClick = output<string | null>();
 
   protected selectedTag = signal<string | null>(null);
+  protected filteredTags = computed(() => this.stats().filter(stat => stat.count > 1));
 
   selectTag(tag: string): void {
 
