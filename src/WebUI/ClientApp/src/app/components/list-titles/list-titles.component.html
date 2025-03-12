@@ -9,9 +9,13 @@
             (click)="titleClick(title.id)">
             <div class="d-flex align-items-center justify-content-between">
                 <span>{{ title.name }}</span>
-                <span   class="badge"
-                        [class.bg-secondary]="!isSelected"
-                        [class.bg-info]="isSelected">{{ title.count }}</span>
+
+                @if (title.count > 0) {
+                    <span   class="badge"
+                            [title]="title.count + ' tasks left'"
+                            [class.bg-secondary]="!isSelected"
+                            [class.bg-info]="isSelected">{{ title.count }}</span>
+                }
             </div>
         </li>
 
