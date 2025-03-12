@@ -9,7 +9,7 @@ import { TodoItemComponent } from 'src/app/components/todo-item/todo-item.compon
 import { ItemDetailsFormComponent } from 'src/app/forms/item-details-form/item-details-form.component';
 import { ListUpdateFormComponent } from 'src/app/forms/list-update-form/list-update-form.component';
 import { todoActions } from 'src/app/store/actions/todo.actions';
-import { selTodo_itemDetailFormVisible, selTodo_listDeleteFormVisible, selTodo_listTitles, selTodo_listUpdateFormVisible, selTodo_priorityLevels, selTodo_selectedItem, selTodo_selectedList, selTodo_selectedTag, selTodo_tagStatsList } from 'src/app/store/selectors/todo.selectors';
+import { selTodo_itemDetailFormVisible, selTodo_listDeleteFormVisible, selTodo_listTitles, selTodo_listUpdateFormVisible, selTodo_priorityLevels, selTodo_searchTerm, selTodo_selectedItem, selTodo_selectedList, selTodo_selectedTag, selTodo_tagStatsList } from 'src/app/store/selectors/todo.selectors';
 import { TodoItemDto } from 'src/app/web-api-client';
 
 @Component({
@@ -25,15 +25,31 @@ export class TodoListContainer {
   private modalService = inject(BsModalService);
 
   protected selectedList = this.store.selectSignal(selTodo_selectedList);
+  protected searchTerm = this.store.selectSignal(selTodo_searchTerm);
   protected selectedTag = this.store.selectSignal(selTodo_selectedTag);
   protected tagStatsList = this.store.selectSignal(selTodo_tagStatsList);
 
-  protected selectedListItems = computed(() => this.selectedList().items ?? []);
   protected selectedItem = this.store.selectSignal(selTodo_selectedItem);
   protected listTitles = this.store.selectSignal(selTodo_listTitles);
   protected priorityLevels = this.store.selectSignal(selTodo_priorityLevels);
 
   protected tagSuggestions = signal<string[]>([]);
+  protected selectedListItems = computed(() => {
+
+    let items = this.selectedList().items ?? [];
+
+    // if tag selected
+    if (this.selectedTag())
+      items = items.filter(item => item.tagList?.includes(this.selectedTag()));
+
+    // if search term entered
+    const term = this.searchTerm();
+    if (typeof term === 'string' && !!term) // because Chrome returns event
+      items = items.filter(item => item.title?.toLowerCase().indexOf(term.toLowerCase().trim()) >= 0);
+
+    return items;
+
+  });
 
   // list update form modal
   protected listUpdateFormTemplateRef = viewChild.required<TemplateRef<{}>>('listOptionsModalTemplate');
