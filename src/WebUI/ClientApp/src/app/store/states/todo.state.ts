@@ -6,6 +6,7 @@ export interface TodoModuleState {
     priorityLevels: PriorityLevelDto[];
     selectedListId: number | null;
     selectedItemId: number | null;
+    selectedTag: string | null;
     searchTerm: string | null;
 
     loading: boolean;
@@ -25,6 +26,7 @@ export const todo_initialState: TodoModuleState = {
     priorityLevels: [],
     selectedListId: null,
     selectedItemId: null,
+    selectedTag: null,
     searchTerm: null,
     loading: true,
 

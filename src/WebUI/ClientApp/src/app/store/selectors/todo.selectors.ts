@@ -103,6 +103,13 @@ export const selTodo_tagStatsList = createSelector(
 
 );
 
+export const selTodo_selectedTag = createSelector(
+
+    selTodo_ModuleState,
+    state => state.selectedTag
+
+);
+
 export const selTodo_searchTerm = createSelector(
 
     selTodo_ModuleState,

@@ -17,26 +17,19 @@ export class MostUsedTagsComponent {
 
   // Input
   stats = input.required<TagStat[]>();
+  selectedTag = input.required<string | null>();
 
   // Output
   tagClick = output<string | null>();
 
-  protected selectedTag = signal<string | null>(null);
   protected filteredTags = computed(() => this.stats().filter(stat => stat.count > 1));
 
-  selectTag(tag: string): void {
+  protected selectTag(tag: string): void {
 
-    if (this.selectedTag() === tag) { // unselect if tag is clicked twice
-
-      this.selectedTag.set(null);
+    if (this.selectedTag() === tag) // unselect if tag is clicked twice
       this.tagClick.emit(null);
-
-    } else {
-
-      this.selectedTag.set(tag);
+    else
       this.tagClick.emit(tag);
-
-    }
 
   }
 

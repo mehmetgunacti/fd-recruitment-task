@@ -27,17 +27,16 @@ export class TagsComponent {
 
   // Input
   selectedList = input.required<TodoListDto>();
+  selectedTag = input.required<string | null>();
 
   // Output
   tagSelected = output<string | null>();
 
-  protected selectedTag = signal<string | null>(null);
   protected tags = computed(() => reduceTags(this.selectedList()));
 
   selectTag(tag: string): void {
 
     const newTag = this.selectedTag() === tag ? null : tag; // de-select on 2nd click
-    this.selectedTag.set(newTag);
     this.tagSelected.emit(newTag);
 
   }

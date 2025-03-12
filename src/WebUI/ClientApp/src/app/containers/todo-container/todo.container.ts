@@ -8,7 +8,7 @@ import { MostUsedTagsComponent } from 'src/app/components/most-used-tags/most-us
 import { SearchBoxComponent } from 'src/app/components/search-box/search-box.component';
 import { NewListFormComponent } from 'src/app/forms/new-list-form/new-list-form.component';
 import { todoActions } from 'src/app/store/actions/todo.actions';
-import { selTodo_listCreateFormVisible, selTodo_lists, selTodo_listTitles, selTodo_loading, selTodo_selectedListId, selTodo_tagStatsList } from 'src/app/store/selectors/todo.selectors';
+import { selTodo_listCreateFormVisible, selTodo_lists, selTodo_listTitles, selTodo_loading, selTodo_selectedListId, selTodo_selectedTag, selTodo_tagStatsList } from 'src/app/store/selectors/todo.selectors';
 import { TodoListContainer } from '../todo-list-container/todo-list.container';
 
 @Component({
@@ -28,6 +28,7 @@ export class TodoContainer {
   protected listTitles = this.store.selectSignal(selTodo_listTitles);
   protected selectedListId = this.store.selectSignal(selTodo_selectedListId);
   protected tagStatsList = this.store.selectSignal(selTodo_tagStatsList);
+  protected selectedTag = this.store.selectSignal(selTodo_selectedTag);
 
   // list create form modal
   protected listCreateFormTemplateRef = viewChild.required<TemplateRef<{}>>('listCreateFormModalTemplate');
@@ -52,39 +53,31 @@ export class TodoContainer {
   }
 
   ngOnInit(): void {
-
     this.store.dispatch(todoActions.getLists());
-
   }
 
   onSearch(searchTerm: string): void {
-
     this.store.dispatch(todoActions.search({ searchTerm }));
+  }
 
+  onTagClick(tag: string | null): void {
+    this.store.dispatch(todoActions.selectTag({ tag }));
   }
 
   onSelectList(id: number): void {
-
     this.store.dispatch(todoActions.selectList({ id }));
-
   }
 
   onAddList(title: string): void {
-
     this.store.dispatch(todoActions.addList({ title }));
-
   }
 
   onOpenListCreateModal(): void {
-
     this.store.dispatch(todoActions.openListCreateForm());
-
   }
 
   onCloseListCreateForm(): void {
-
     this.store.dispatch(todoActions.closeListCreateForm());
-
   }
 
 }

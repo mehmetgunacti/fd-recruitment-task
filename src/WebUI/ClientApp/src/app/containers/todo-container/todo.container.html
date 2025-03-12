@@ -27,7 +27,10 @@
         <app-search-box (search)="onSearch($event)" class="d-block pt-2"/>
 
         <!-- MOST USED TAGS -->
-        <app-most-used-tags [stats]="tagStatsList()" class="d-block pt-2"/>
+        <app-most-used-tags [stats]="tagStatsList()"
+                            [selectedTag]="selectedTag()"
+                            (tagClick)="onTagClick($event)"
+                            class="d-block pt-2"/>
 
       </div>
 

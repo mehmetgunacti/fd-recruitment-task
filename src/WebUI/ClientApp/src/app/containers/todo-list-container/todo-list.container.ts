@@ -9,7 +9,7 @@ import { TodoItemComponent } from 'src/app/components/todo-item/todo-item.compon
 import { ItemDetailsFormComponent } from 'src/app/forms/item-details-form/item-details-form.component';
 import { ListUpdateFormComponent } from 'src/app/forms/list-update-form/list-update-form.component';
 import { todoActions } from 'src/app/store/actions/todo.actions';
-import { selTodo_itemDetailFormVisible, selTodo_listDeleteFormVisible, selTodo_listTitles, selTodo_listUpdateFormVisible, selTodo_priorityLevels, selTodo_selectedItem, selTodo_selectedList, selTodo_tagStatsList } from 'src/app/store/selectors/todo.selectors';
+import { selTodo_itemDetailFormVisible, selTodo_listDeleteFormVisible, selTodo_listTitles, selTodo_listUpdateFormVisible, selTodo_priorityLevels, selTodo_selectedItem, selTodo_selectedList, selTodo_selectedTag, selTodo_tagStatsList } from 'src/app/store/selectors/todo.selectors';
 import { TodoItemDto } from 'src/app/web-api-client';
 
 @Component({
@@ -25,6 +25,7 @@ export class TodoListContainer {
   private modalService = inject(BsModalService);
 
   protected selectedList = this.store.selectSignal(selTodo_selectedList);
+  protected selectedTag = this.store.selectSignal(selTodo_selectedTag);
   protected tagStatsList = this.store.selectSignal(selTodo_tagStatsList);
 
   protected selectedListItems = computed(() => this.selectedList().items ?? []);
@@ -156,7 +157,7 @@ export class TodoListContainer {
   }
 
   protected onTagSelected(tag: string): void {
-    console.log('tag selected', tag);
+    this.store.dispatch(todoActions.selectTag({ tag }));
   }
 
 }

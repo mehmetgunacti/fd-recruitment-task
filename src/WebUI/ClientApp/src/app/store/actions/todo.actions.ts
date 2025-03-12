@@ -7,6 +7,7 @@ export const todoActions = createActionGroup({
     events: {
 
         selectList      : props<{ id: number }>(),
+        selectTag       : props<{ tag: string | null }>(),
         search          : props<{ searchTerm: string | null }>(),
 
         // List Create Form

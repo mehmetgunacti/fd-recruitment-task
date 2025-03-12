@@ -22,6 +22,7 @@ const reducer = createReducer(
 
 	}),
 	on(todoActions.search, (state, { searchTerm }): TodoModuleState => ({ ...state, searchTerm })),
+	on(todoActions.selectTag, (state, { tag }): TodoModuleState => ({ ...state, selectedTag: tag })),
 	on(todoActions.selectList, (state, { id }): TodoModuleState => ({ ...state, selectedListId: id })),
 
 	// List create

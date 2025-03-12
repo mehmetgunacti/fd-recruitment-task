@@ -10,7 +10,9 @@
   </div>
 
   <!-- Tags -->
-  <app-tags [selectedList]="selectedList()" (tagSelected)="onTagSelected($event)" />
+  <app-tags [selectedList]="selectedList()"
+            [selectedTag]="selectedTag()"
+            (tagSelected)="onTagSelected($event)" />
 
   <!-- Items -->
   <ul id="todo-items" class="list-group mb-2">
