@@ -1,0 +1,76 @@
+@if (selectedList()) {
+
+  <div class="d-flex align-items-center justify-content-between">
+    <h2>{{ selectedList().title }}</h2>
+    <button class="btn btn-default me-2"
+            title="List Options..."
+            (click)="onOpenListUpdateForm()">
+        <i class="bi bi-three-dots-vertical"></i>
+    </button>
+  </div>
+
+  <!-- Tags -->
+  <app-tags [selectedList]="selectedList()"
+            [selectedTag]="selectedTag()"
+            (tagSelected)="onTagSelected($event)" />
+
+  <!-- Items -->
+  <ul id="todo-items" class="list-group mb-2">
+
+    @for(item of selectedListItems(); track $index) {
+
+      <li class="list-group-item" [style.backgroundColor]="item.bgColour">
+
+        <app-todo-item  [item]="item"
+                        (edit)="onOpenItemDetailForm($event)"
+                        (update)="onItemUpdate($event)" />
+
+      </li>
+
+    }
+    <li class="list-group-item">
+      <app-add-todo-item (add)="onItemAdd($event)" />
+    </li>
+  </ul>
+
+} @else {
+
+  <div class="d-flex align-items-center justify-content-center gap-2 text-secondary mt-5">
+    <i class="bi bi-arrow-left-circle"></i> <i>Pick a list</i>
+  </div>
+
+}
+
+<!-- LIST OPTIONS MODAL -->
+<ng-template #listOptionsModalTemplate>
+
+  <app-list-update-form [error]="null"
+                        [dto]="selectedList()"
+                        (update)="onUpdateList(selectedList().id, $event)"
+                        (cancel)="onCloseListUpdateForm()"
+                        (delete)="onDeleteList()"/>
+
+</ng-template>
+
+<!-- ITEM DETAILS MODAL -->
+<ng-template #itemDetailsModalTemplate>
+
+  <app-item-details-form  [item]="selectedItem()"
+                          [listTitles]="listTitles()"
+                          [priorityLevels]="priorityLevels()"
+                          [tagSuggestions]="tagSuggestions()"
+                          (update)="onItemDetailUpdate($event)"
+                          (cancel)="onItemDetailCancel()"
+                          (delete)="onItemDetailDelete($event)"
+                          (tagInput)="onItemDetailTagInput($event)"/>
+
+</ng-template>
+
+<!-- DELETE LIST MODAL -->
+<ng-template #listDeleteModalTemplate>
+
+  <app-delete-list  [list]="selectedList()"
+                    (confirmed)="onDeleteListConfirmed()"
+                    (rejected)="onDeleteListRejected()"/>
+
+</ng-template>

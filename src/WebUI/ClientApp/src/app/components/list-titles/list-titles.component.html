@@ -1,0 +1,24 @@
+<ul class="list-group">
+
+    @for (title of titles() | sortByKey:'name'; track $index) {
+
+        @let isSelected = title.id === selectedListId();
+        <li class="list-group-item"
+            role="button"
+            [class.active]="isSelected"
+            (click)="titleClick(title.id)">
+            <div class="d-flex align-items-center justify-content-between">
+                <span>{{ title.name }}</span>
+
+                @if (title.count > 0) {
+                    <span   class="badge"
+                            [title]="title.count + ' tasks left'"
+                            [class.bg-secondary]="!isSelected"
+                            [class.bg-info]="isSelected">{{ title.count }}</span>
+                }
+            </div>
+        </li>
+
+    }
+
+</ul>

@@ -1,0 +1,26 @@
+<div class="d-flex">
+    <div class="todo-item-checkbox">
+      <input type="checkbox" [checked]="item().done" #itemState (change)="onStateChange(itemState.checked)" />
+    </div>
+    <div class="flex-fill">
+
+        <div    contenteditable="true"
+                class="todo-item-title form-control item-input-control focus-ring"
+                [class.done-todo]="item().done"
+                (keydown.enter)="onEnterKey($event)"
+                (blur)="onBlur($event)"
+                [innerHTML]="item().title?.trim() ?? ''">
+        </div>
+      
+    </div>
+    <div class="todo-item-commands">
+
+        <button (click)="onEdit()"
+                class="btn btn-default btn-xs"
+                role="button">
+            <i class="bi bi-three-dots-vertical"></i>
+        </button>
+
+    </div>
+
+</div>

@@ -1,0 +1,34 @@
+<!-- MODAL HEADER -->
+<div class="modal-header">
+    <h4 class="modal-title lh-sm">List Options</h4>
+    <button type="button"
+            class="close btn-close"
+            aria-label="Close"
+            (click)="onCancel()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+</div>
+
+<!-- MODAL BODY -->
+<div class="modal-body">
+    <div class="form-group">
+
+        <label for="inputListTitle">Title</label>
+        <input  type="text"
+                class="form-control"
+                id="inputListTitle"
+                placeholder="List name..."
+                [formControl]="fc"
+                [class.is-invalid]="error()"
+                (keyup.enter)="onUpdate()" />
+
+    </div>
+
+</div>
+
+<!-- MODAL FOOTER -->
+<div class="modal-footer">
+    <button class="btn btn-default text-danger" (click)="onDelete()">Delete</button>
+    <button class="btn btn-default ms-auto" (click)="onCancel()">Cancel</button>
+    <button class="btn btn-primary" (click)="onUpdate()">Update</button>
+</div>

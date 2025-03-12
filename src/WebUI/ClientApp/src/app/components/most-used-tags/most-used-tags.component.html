@@ -1,0 +1,39 @@
+<!-- HEADER -->
+<h6>
+    <i class="bi bi-trophy"></i> Most Used Tags
+</h6>
+
+<!-- TAGS -->
+<div class="d-flex flex-wrap align-items-center justify-content-start gap-1 form-group mb-1 p-2">
+
+    @for (stat of filteredTags(); track $index) {
+
+        @let tag = stat.tag;
+        @let count = stat.count;
+        @let isSelected = selectedTag() !== null && tag === selectedTag();
+        <span   class="badge rounded-pill form-control w-auto position-relative"
+                [class.bg-primary]="!isSelected"
+                [class.bg-warning]="isSelected"
+                (click)="selectTag(tag)"
+                (keydown.Enter)="selectTag(tag)"
+                role="button"
+                tabindex="0">
+                {{tag}}
+
+            <span   class="badge"
+                    [class.bg-info]="!isSelected"
+                    [class.bg-warning]="isSelected">
+                    {{count}}
+            </span>
+
+        </span>
+
+    } @empty {
+
+        <div class="justify-content-center w-full border-2">
+            <i class="text-secondary">add more tags</i>
+        </div>
+
+    }
+
+</div>

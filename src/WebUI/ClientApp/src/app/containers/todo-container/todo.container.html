@@ -1,0 +1,51 @@
+<h1>Todo</h1>
+<p>This is a complex todo list component.</p>
+
+@if (loading()) {
+
+  <p><em>Loading...</em></p>
+
+} @else {
+
+    <div class="row">
+      <div class="col-sm-4">
+
+        <!-- LIST TITLES HEADER -->
+        <div class="d-flex align-items-center justify-content-between">
+          <h2>Lists</h2>
+          <button class="btn btn-default"
+                  title="New List..."
+                  (click)="onOpenListCreateModal()">
+            <i class="bi bi-journal-plus"></i>
+          </button>
+        </div>
+
+        <!-- LIST TITLES -->
+        <app-list-titles [titles]="listTitles()" [selectedListId]="selectedListId()" (titleClicked)="onSelectList($event)"/>
+
+        <!-- SEARCH -->
+        <app-search-box (search)="onSearch($event)" class="d-block pt-2"/>
+
+        <!-- MOST USED TAGS -->
+        <app-most-used-tags [stats]="tagStatsList()"
+                            [selectedTag]="selectedTag()"
+                            (tagClick)="onTagClick($event)"
+                            class="d-block pt-2"/>
+
+      </div>
+
+      <!-- TODO LIST CONTAINER -->
+      <div class="col-sm-8">
+        <app-todo-list-container/>
+      </div>
+
+    </div>
+
+}
+
+<!-- NEW LIST MODAL -->
+<ng-template #listCreateFormModalTemplate>
+
+  <app-new-list-form [error]="null" (add)="onAddList($event)" (cancel)="onCloseListCreateForm()"/>
+
+</ng-template>
