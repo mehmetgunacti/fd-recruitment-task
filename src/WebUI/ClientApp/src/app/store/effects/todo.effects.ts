@@ -116,10 +116,29 @@ export class TodoEffects {
             ofType(todoActions.updateItem),
             exhaustMap(
 
+                ({ dto }) => this.itemsClient.update(dto.id, dto).pipe(
+
+                    map(() => todoActions.updateItemDetailSuccess({dto})),
+                    catchError((error) => of(todoActions.updateItemDetailFailure({ error: JSON.parse(error.response) })))
+
+                )
+            ),
+
+        )
+
+    );
+
+    updateItemDetail$ = createEffect(
+
+        () => this.actions$.pipe(
+
+            ofType(todoActions.updateItemDetail),
+            exhaustMap(
+
                 ({ dto }) => this.itemsClient.updateItemDetails(dto.id, dto).pipe(
 
-                    map(() => todoActions.updateItemSuccess({dto})),
-                    catchError((error) => of(todoActions.updateItemFailure({ error: JSON.parse(error.response) })))
+                    map(() => todoActions.updateItemDetailSuccess({dto})),
+                    catchError((error) => of(todoActions.updateItemDetailFailure({ error: JSON.parse(error.response) })))
 
                 )
             ),

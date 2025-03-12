@@ -115,7 +115,7 @@ const reducer = createReducer(
 	}),
 	on(todoActions.addItemFailure, (state, { error }): TodoModuleState => ({ ...state, error })),
 
-	on(todoActions.updateItemSuccess, (state, { dto }): TodoModuleState => {
+	on(todoActions.updateItemDetailSuccess, (state, { dto }): TodoModuleState => {
 
 		return produce(
 
@@ -146,7 +146,7 @@ const reducer = createReducer(
 		);
 
 	}),
-	on(todoActions.updateItemFailure, (state, { error }): TodoModuleState => ({ ...state, error })),
+	on(todoActions.updateItemDetailFailure, (state, { error }): TodoModuleState => ({ ...state, error })),
 
 
 );

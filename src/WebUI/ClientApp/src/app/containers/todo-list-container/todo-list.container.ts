@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, TemplateRef, viewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { AddTodoItemComponent } from 'src/app/components/add-todo-item/add-todo-item.component';
@@ -9,8 +9,8 @@ import { TodoItemComponent } from 'src/app/components/todo-item/todo-item.compon
 import { ItemDetailsFormComponent } from 'src/app/forms/item-details-form/item-details-form.component';
 import { ListUpdateFormComponent } from 'src/app/forms/list-update-form/list-update-form.component';
 import { todoActions } from 'src/app/store/actions/todo.actions';
-import { selTodo_itemDetailFormVisible, selTodo_listDeleteFormVisible, selTodo_lists, selTodo_listTitles, selTodo_listUpdateFormVisible, selTodo_priorityLevels, selTodo_selectedItem, selTodo_selectedList, selTodo_tagStatsList } from 'src/app/store/selectors/todo.selectors';
-import { CreateTodoItemCommand, TodoItemDto, TodoItemsClient, TodoListsClient, UpdateTodoListCommand } from 'src/app/web-api-client';
+import { selTodo_itemDetailFormVisible, selTodo_listDeleteFormVisible, selTodo_listTitles, selTodo_listUpdateFormVisible, selTodo_priorityLevels, selTodo_selectedItem, selTodo_selectedList, selTodo_tagStatsList } from 'src/app/store/selectors/todo.selectors';
+import { TodoItemDto } from 'src/app/web-api-client';
 
 @Component({
   selector: 'app-todo-list-container',
@@ -24,7 +24,7 @@ export class TodoListContainer {
   private store: Store = inject(Store);
   private modalService = inject(BsModalService);
 
-  protected selectedList = this.store.selectSignal(selTodo_selectedList); // <-- empty?
+  protected selectedList = this.store.selectSignal(selTodo_selectedList);
   protected tagStatsList = this.store.selectSignal(selTodo_tagStatsList);
 
   protected selectedListItems = computed(() => this.selectedList().items ?? []);
@@ -112,27 +112,33 @@ export class TodoListContainer {
     this.store.dispatch(todoActions.openListDeleteForm());
   }
 
-  protected onItemStateChanged({ id, newState }: { id: number, newState: boolean }): void {
-    console.log(id, newState, 'stateChange');
-  }
 
   protected onItemTitleChanged({ id, newTitle }: { id: number, newTitle: string }): void {
-    console.log(id, newTitle, 'titleChange');
+    
   }
 
   protected onOpenItemDetailForm(id: number): void {
     this.store.dispatch(todoActions.openItemDetailForm({ id }));
   }
 
+  // update dto
   protected onItemDetailUpdate(dto: TodoItemDto): void {
+    this.store.dispatch(todoActions.updateItemDetail({ dto }));
+  }
+
+  // updates only title & done
+  protected onItemUpdate(dto: TodoItemDto): void {
     this.store.dispatch(todoActions.updateItem({ dto }));
   }
+
   protected onItemDetailCancel(): void {
     this.store.dispatch(todoActions.closeItemDetailForm());
   }
+
   protected onItemDetailDelete(): void {
     console.log('item detail delete...');
   }
+
   protected onItemDetailTagInput(tag: string | null): void {
 
     this.tagSuggestions.update(tags => {
@@ -157,117 +163,5 @@ export class TodoListContainer {
   protected onTagSelected(tag: string): void {
     console.log('tag selected', tag);
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // updateItem(item: TodoItemDto, pressedEnter: boolean = false): void {
-  //   const isNewItem = item.id === 0;
-
-  //   if (!item.title.trim()) {
-  //     // this.deleteItem(item);
-  //     return;
-  //   }
-
-  //   if (item.id === 0) {
-  //     this.itemsClient
-  //       .create({
-  //         ...item, listId: this.selectedList().id
-  //       } as CreateTodoItemCommand)
-  //       .subscribe(
-  //         result => {
-  //           item.id = result;
-  //         },
-  //         error => console.error(error)
-  //       );
-  //   } else {
-  //     this.itemsClient.update(item.id, item).subscribe(
-  //       () => console.log('Update succeeded.'),
-  //       error => console.error(error)
-  //     );
-  //   }
-
-  //   // this.selectedItem = null;
-
-  //   if (isNewItem && pressedEnter) {
-  //     setTimeout(() => this.addItem(), 250);
-  //   }
-  // }
-
-
-
-
-
-
-  updateItemDetails(): void {
-
-    // const item = new UpdateTodoItemDetailCommand(this.itemDetailsFormGroup.value);
-    // this.itemsClient.updateItemDetails(this.selectedItem().id, item).subscribe(
-    //   () => {
-    //     if (this.selectedItem().listId !== item.listId) {
-    //       this.selectedList().items = this.selectedList().items.filter(
-    //         i => i.id !== this.selectedItem().id
-    //       );
-    //       const listIndex = this.lists().findIndex(
-    //         l => l.id === item.listId
-    //       );
-    //       this.selectedItem().listId = item.listId;
-    //       this.lists[listIndex].items.push(this.selectedItem());
-    //     }
-    //     this.selectedItem().priority = item.priority;
-    //     this.selectedItem().note = item.note;
-    //     this.selectedItem().bgColour = item.bgColour;
-    //     this.selectedItem().tagList = item.tagList;
-    //     // this.selectedListAllTags = reduceTags(this.selectedList().items);
-    //     this.itemDetailsModalRef.hide();
-    //     this.itemDetailsFormGroup.reset();
-    //   },
-    //   error => console.error(error)
-    // );
-
-  }
-
-  // deleteItem(id: number, countDown?: boolean) { //item: TodoItemDto, countDown?: boolean) {
-  //   const item = {} as TodoItemDto;
-  //   if (countDown) {
-  //     if (this.deleting) {
-  //       // this.stopDeleteCountDown();
-  //       return;
-  //     }
-  //     this.deleteCountDown = 3;
-  //     this.deleting = true;
-  //     this.deleteCountDownInterval = setInterval(() => {
-  //       if (this.deleting && --this.deleteCountDown <= 0) {
-  //         // this.deleteItem(item, false);
-  //       }
-  //     }, 1000);
-  //     return;
-  //   }
-  //   this.deleting = false;
-  //   if (this.itemDetailsModalRef) {
-  //     this.itemDetailsModalRef.hide();
-  //   }
-
-  //   if (item.id === 0) {
-  //     //const itemIndex = this.selectedList().items.indexOf(this.selectedItem());
-  //     //this.selectedList().items.splice(itemIndex, 1);
-  //   } else {
-  //     this.itemsClient.delete(item.id).subscribe(
-  //       () => (this.selectedList().items = this.selectedList().items.filter(t => t.id !== item.id)),
-  //       error => console.error(error)
-  //     );
-  //   }
-  //   // this.selectedListAllTags = reduceTags(this.selectedList().items);
-  //   // this.itemDetailsFormGroup.reset();
-  // }
 
 }

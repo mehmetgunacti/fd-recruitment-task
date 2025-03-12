@@ -14,28 +14,27 @@ export class TodoItemComponent {
   item = input.required<TodoItemDto>();
 
   // Output
-  stateChanged = output<{ id: number, newState: boolean }>();
-  titleChanged = output<{ id: number, newTitle: string }>();
+  update = output<TodoItemDto>();
   edit = output<number>();
 
   private isProgrammaticBlur = false;
 
   protected onStateChange(newState: boolean): void {
-    this.stateChanged.emit({ id: this.item().id, newState })
+    this.update.emit(TodoItemDto.fromJS({ ...this.item(), done: newState }));
   }
 
   protected onEnterKey(event: Event) {
 
     const target = event.target as HTMLElement;
     const content = target.innerHTML;
-    
+
     event.preventDefault();
-    
+
     // notify onBlur()
     this.isProgrammaticBlur = true;
     target.blur();
 
-    this.onUpdate(content);
+    this.onTitleUpdate(content);
 
   }
 
@@ -49,15 +48,15 @@ export class TodoItemComponent {
     const target = event.target as HTMLElement;
     const content = target.innerHTML;
 
-    this.onUpdate(content);
+    this.onTitleUpdate(content);
 
   }
 
-  private onUpdate(title: string): void {
+  private onTitleUpdate(title: string): void {
 
     const newTitle = title.trim();
     if (newTitle !== this.item().title?.trim())
-      this.titleChanged.emit({ id: this.item().id, newTitle });
+      this.update.emit(TodoItemDto.fromJS({ ...this.item(), title: newTitle }));
 
   }
 

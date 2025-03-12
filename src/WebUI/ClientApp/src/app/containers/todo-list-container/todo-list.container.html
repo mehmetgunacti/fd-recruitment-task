@@ -20,8 +20,7 @@
 
       <app-todo-item  [item]="item"
                       (edit)="onOpenItemDetailForm($event)"
-                      (stateChanged)="onItemStateChanged($event)"
-                      (titleChanged)="onItemTitleChanged($event)" />
+                      (update)="onItemUpdate($event)" />
 
     </li>
 

@@ -49,10 +49,13 @@ export const todoActions = createActionGroup({
         addItemSuccess  : props<{ listId: number, id: number, title: string }>(),
         addItemFailure  : props<{ error: string }>(),
 
-        // update item dto
-        updateItem         : props<{ dto: TodoItemDto }>(),
-        updateItemSuccess  : props<{ dto: TodoItemDto }>(),
-        updateItemFailure  : props<{ error: string }>(),
+        // update item dto (updates only title & done fields)
+        updateItem      : props<{ dto: TodoItemDto }>(),
+
+        // update item detail dto
+        updateItemDetail         : props<{ dto: TodoItemDto }>(),
+        updateItemDetailSuccess  : props<{ dto: TodoItemDto }>(),
+        updateItemDetailFailure  : props<{ error: string }>(),
 
     }
 
