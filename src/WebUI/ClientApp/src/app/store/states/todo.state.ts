@@ -5,20 +5,17 @@ export interface TodoModuleState {
     entities: Record<number, TodoListDto>,
     priorityLevels: PriorityLevelDto[];
     selectedListId: number | null;
+    selectedItemId: number | null;
     searchTerm: string | null;
 
     loading: boolean;
 
     listCreateFormVisible: boolean;
-    listCreateFormError: string | null;
-
     listUpdateFormVisible: boolean;
-    listUpdateFormError: string | null;
-
     listDeleteFormVisible: boolean;
-    listDeleteFormError: string | null;
+    itemDetailFormVisible: boolean;
 
-    addItemError: string | null;
+    error: string | null;
 
 }
 
@@ -27,19 +24,16 @@ export const todo_initialState: TodoModuleState = {
     entities: {},
     priorityLevels: [],
     selectedListId: null,
+    selectedItemId: null,
     searchTerm: null,
     loading: true,
 
     listCreateFormVisible: false,
-    listCreateFormError: null,
-
     listUpdateFormVisible: false,
-    listUpdateFormError: null,
-
     listDeleteFormVisible: false,
-    listDeleteFormError: null,
+    itemDetailFormVisible: false,
 
-    addItemError: null
+    error: null
 
 };
 

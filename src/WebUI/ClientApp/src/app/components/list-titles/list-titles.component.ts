@@ -1,13 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ListTitle } from 'src/app/models/list-title.model';
 import { SortByKeyPipe } from 'src/app/pipes/sort-by-key.pipe';
-
-export interface ListTitle {
-
-    id: number;
-    name: string;
-    count: number;
-
-}
 
 @Component({
   selector: 'app-list-titles',

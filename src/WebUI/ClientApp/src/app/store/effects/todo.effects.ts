@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { catchError, exhaustMap, map, switchMap } from 'rxjs/operators';
+import { catchError, exhaustMap, map, switchMap, tap } from 'rxjs/operators';
 import { CreateTodoItemCommand, CreateTodoListCommand, TodoItemsClient, TodoListDto, TodoListsClient, UpdateTodoListCommand } from 'src/app/web-api-client';
 import { todoActions } from '../actions/todo.actions';
 
@@ -101,6 +101,25 @@ export class TodoEffects {
 
                     map(id => todoActions.addItemSuccess({ listId, id, title })),
                     catchError((error) => of(todoActions.addItemFailure({ error: JSON.parse(error.response) })))
+
+                )
+            ),
+
+        )
+
+    );
+
+    updateItem$ = createEffect(
+
+        () => this.actions$.pipe(
+
+            ofType(todoActions.updateItem),
+            exhaustMap(
+
+                ({ dto }) => this.itemsClient.updateItemDetails(dto.id, dto).pipe(
+
+                    map(() => todoActions.updateItemSuccess({dto})),
+                    catchError((error) => of(todoActions.updateItemFailure({ error: JSON.parse(error.response) })))
 
                 )
             ),

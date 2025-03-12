@@ -1,8 +1,8 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { ListTitle } from 'src/app/components/list-titles/list-titles.component';
 import { TagStat } from 'src/app/components/most-used-tags/most-used-tags.component';
-import { TodoModuleState } from '../states/todo.state';
+import { ListTitle } from 'src/app/models/list-title.model';
 import { TodoItemDto } from 'src/app/web-api-client';
+import { TodoModuleState } from '../states/todo.state';
 
 const selTodo_ModuleState = createFeatureSelector<TodoModuleState>('todo');
 
@@ -27,6 +27,13 @@ export const selTodo_selectedListId = createSelector(
 
 );
 
+export const selTodo_selectedItemId = createSelector(
+
+    selTodo_ModuleState,
+    state => state.selectedItemId
+
+);
+
 export const selTodo_loading = createSelector(
 
     selTodo_ModuleState,
@@ -39,6 +46,14 @@ export const selTodo_selectedList = createSelector(
     selTodo_lists,
     selTodo_selectedListId,
     (lists, selectedListId) => lists.find(list => list.id === selectedListId) ?? lists.at(0)
+
+);
+
+export const selTodo_selectedItem = createSelector(
+
+    selTodo_selectedList,
+    selTodo_selectedItemId,
+    (list, selectedItemId) => selectedItemId ? list.items?.find(item => item.id === selectedItemId) ?? null : null
 
 );
 
@@ -55,7 +70,7 @@ export const selTodo_listTitles = createSelector(
 
 );
 
-export const selTodo_mostUsedTags = createSelector(
+export const selTodo_tagStatsList = createSelector(
 
     selTodo_lists,
     lists => {
@@ -81,8 +96,7 @@ export const selTodo_mostUsedTags = createSelector(
         const tagStatList: TagStat[] =
             Object
                 .keys(result)
-                .map(tag => ({ tag, count: result[tag] }))
-                .filter(stat => stat.count > 1);
+                .map(tag => ({ tag, count: result[tag] }));
         return tagStatList;
 
     }
@@ -117,34 +131,9 @@ export const selTodo_listDeleteFormVisible = createSelector(
 
 );
 
-function search(val: string): void {
+export const selTodo_itemDetailFormVisible = createSelector(
 
-    this.selectedTag = null;
-    const term = val.trim().toLowerCase();
-    if (term.length === 0)
-        this.selectedItems = this.selectedList?.items ?? [];
-    else
-        this.selectedItems = this.selectedList?.items?.filter(item => (item.title ?? '').toLowerCase().indexOf(term) >= 0) ?? [];
+    selTodo_ModuleState,
+    state => state.itemDetailFormVisible
 
-}
-
-function reduceTags(items?: TodoItemDto[]): string[] {
-
-    if (!items)
-        return [];
-
-    const uniqueTags = new Set<string>(
-        items
-            .map(item => item.tagList || [])
-            .reduce((acc, cur) => acc.concat(cur), [])
-    );
-
-    return Array.from(uniqueTags);
-
-}
-
-function filterItems(tag: string, items?: TodoItemDto[]): TodoItemDto[] {
-
-    return items?.filter(item => item.tagList?.includes(tag)) ?? [];
-
-}
+);

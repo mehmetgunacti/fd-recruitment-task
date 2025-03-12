@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { TodoListDto, TodosVm } from 'src/app/web-api-client';
+import { TodoItemDto, TodoListDto, TodosVm } from 'src/app/web-api-client';
 
 export const todoActions = createActionGroup({
 
@@ -20,6 +20,10 @@ export const todoActions = createActionGroup({
         // List Delete Form
         openListDeleteForm : emptyProps(),
         closeListDeleteForm: emptyProps(),
+
+        // Item Detail Form
+        openItemDetailForm : props<{ id: number }>(),
+        closeItemDetailForm: emptyProps(),
 
         getLists        : emptyProps(),
         getListsSuccess : props<{ vm: TodosVm }>(),
@@ -44,6 +48,11 @@ export const todoActions = createActionGroup({
         addItem         : props<{ listId: number, title: string }>(),
         addItemSuccess  : props<{ listId: number, id: number, title: string }>(),
         addItemFailure  : props<{ error: string }>(),
+
+        // update item dto
+        updateItem         : props<{ dto: TodoItemDto }>(),
+        updateItemSuccess  : props<{ dto: TodoItemDto }>(),
+        updateItemFailure  : props<{ error: string }>(),
 
     }
 

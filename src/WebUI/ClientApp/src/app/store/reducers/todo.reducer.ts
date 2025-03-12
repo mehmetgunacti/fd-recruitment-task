@@ -36,6 +36,9 @@ const reducer = createReducer(
 	on(todoActions.openListDeleteForm, (state): TodoModuleState => ({ ...state, listDeleteFormVisible: true, listUpdateFormVisible: false })),
 	on(todoActions.closeListDeleteForm, (state): TodoModuleState => ({ ...state, listDeleteFormVisible: false })),
 
+	// Item Detail
+	on(todoActions.openItemDetailForm, (state, { id }): TodoModuleState => ({ ...state, selectedItemId: id, itemDetailFormVisible: true })),
+	on(todoActions.closeItemDetailForm, (state): TodoModuleState => ({ ...state, selectedItemId: null, itemDetailFormVisible: false })),
 
 	on(todoActions.addListSuccess, (state, { dto }): TodoModuleState => {
 
@@ -52,7 +55,7 @@ const reducer = createReducer(
 		);
 
 	}),
-	on(todoActions.addListFailure, (state, { error }): TodoModuleState => ({ ...state, listCreateFormError: error })),
+	on(todoActions.addListFailure, (state, { error }): TodoModuleState => ({ ...state, error })),
 
 	on(todoActions.updateListSuccess, (state, { id, title }): TodoModuleState => {
 
@@ -71,7 +74,7 @@ const reducer = createReducer(
 		);
 
 	}),
-	on(todoActions.updateListFailure, (state, { error }): TodoModuleState => ({ ...state, listUpdateFormError: error })),
+	on(todoActions.updateListFailure, (state, { error }): TodoModuleState => ({ ...state, error })),
 
 	on(todoActions.deleteListSuccess, (state, { id }): TodoModuleState => {
 
@@ -89,7 +92,7 @@ const reducer = createReducer(
 		);
 
 	}),
-	on(todoActions.deleteListFailure, (state, { error }): TodoModuleState => ({ ...state, listDeleteFormError: error })),
+	on(todoActions.deleteListFailure, (state, { error }): TodoModuleState => ({ ...state, error })),
 
 	on(todoActions.addItemSuccess, (state, { listId, id, title }): TodoModuleState => {
 
@@ -110,7 +113,41 @@ const reducer = createReducer(
 		);
 
 	}),
-	on(todoActions.addItemFailure, (state, { error }): TodoModuleState => ({ ...state, addItemError: error })),
+	on(todoActions.addItemFailure, (state, { error }): TodoModuleState => ({ ...state, error })),
+
+	on(todoActions.updateItemSuccess, (state, { dto }): TodoModuleState => {
+
+		return produce(
+
+			state,
+			draft => {
+
+				const listId = dto.listId;
+				const listDto: TodoListDto = draft.entities[listId];
+				const items: TodoItemDto[] = listDto.items ?? [];
+
+				if (items.length) {
+
+					const curItems = items.filter(item => item.id !== dto.id);
+					draft.entities[listId] = TodoListDto.fromJS({
+						...listDto,
+						items: [...curItems, dto]
+					});
+
+				} else
+					draft.entities[listId] = TodoListDto.fromJS({
+						...listDto,
+						items: [dto]
+					});
+				draft.itemDetailFormVisible = false;
+
+			}
+
+		);
+
+	}),
+	on(todoActions.updateItemFailure, (state, { error }): TodoModuleState => ({ ...state, error })),
+
 
 );
 

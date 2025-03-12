@@ -19,7 +19,7 @@
     <li class="list-group-item" [style.backgroundColor]="item.bgColour">
 
       <app-todo-item  [item]="item"
-                      (edit)="onItemEdit($event)"
+                      (edit)="onOpenItemDetailForm($event)"
                       (stateChanged)="onItemStateChanged($event)"
                       (titleChanged)="onItemTitleChanged($event)" />
 
@@ -45,71 +45,14 @@
 <!-- ITEM DETAILS MODAL -->
 <ng-template #itemDetailsModalTemplate>
 
-  <!-- MODAL HEADER -->
-  <div class="modal-header">
-    <h4 class="modal-title pull-left">Item Details</h4>
-    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="itemDetailsModalRef.hide()">
-      <span aria-hidden="true" class="visually-hidden">&times;</span>
-    </button>
-  </div>
-
-  <!-- MODAL BODY -->
-  <div class="modal-body">
-    <form [formGroup]="itemDetailsFormGroup" class="form">
-      <div class="form-group">
-        <label for="list">List</label>
-        <select class="form-control" formControlName="listId">
-
-          @for (list of lists(); track $index) {
-
-            <option [ngValue]="list.id">{{ list.title }}</option>
-
-          }
-
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="priority">Priority</label>
-        <select class="form-control" formControlName="priority">
-
-          @for (level of priorityLevels(); track $index) {
-
-            <option [ngValue]="level.value">{{ level.name }}</option>
-
-          }
-
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="note">Note</label>
-        <textarea id="note" class="form-control" rows="3" formControlName="note"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Tags</label>
-        <app-tag-input formControlName="tagList"
-                       [suggestions]="tagSuggestions"
-                       (tagInput)="onTagInput($event)"></app-tag-input>
-      </div>
-      <div class="form-group">
-        <label for="note">Colour</label>
-        <app-colour-picker formControlName="bgColour" class="form-control"></app-colour-picker>
-      </div>
-    </form>
-
-  </div>
-
-  <!-- MODAL FOOTER -->
-  <div class="modal-footer">
-    <div>
-      <div>
-        <button class="btn btn-default text-danger" (click)="deleteItem(0, true)">{{deleting ? 'Deleting ' + deleteCountDown + ' ...' : 'Delete'}}</button>
-      </div>
-      <div>
-        <button class="btn btn-default" (click)="itemDetailsModalRef.hide()">Cancel</button>
-        <button class="btn btn-primary" (click)="updateItemDetails()">Update</button>
-      </div>
-    </div>
-  </div>
+  <app-item-details-form  [item]="selectedItem()"
+                          [listTitles]="listTitles()"
+                          [priorityLevels]="priorityLevels()"
+                          [tagSuggestions]="tagSuggestions()"
+                          (update)="onItemDetailUpdate($event)"
+                          (cancel)="onItemDetailCancel()"
+                          (delete)="onItemDetailDelete()"
+                          (tagInput)="onItemDetailTagInput($event)"/>
 
 </ng-template>
 

@@ -8,7 +8,7 @@ import { MostUsedTagsComponent } from 'src/app/components/most-used-tags/most-us
 import { SearchBoxComponent } from 'src/app/components/search-box/search-box.component';
 import { NewListFormComponent } from 'src/app/forms/new-list-form/new-list-form.component';
 import { todoActions } from 'src/app/store/actions/todo.actions';
-import { selTodo_listCreateFormVisible, selTodo_lists, selTodo_listTitles, selTodo_loading, selTodo_mostUsedTags, selTodo_selectedListId } from 'src/app/store/selectors/todo.selectors';
+import { selTodo_listCreateFormVisible, selTodo_lists, selTodo_listTitles, selTodo_loading, selTodo_selectedListId, selTodo_tagStatsList } from 'src/app/store/selectors/todo.selectors';
 import { TodoListContainer } from '../todo-list-container/todo-list.container';
 
 @Component({
@@ -27,7 +27,7 @@ export class TodoContainer {
   protected lists = this.store.selectSignal(selTodo_lists);
   protected listTitles = this.store.selectSignal(selTodo_listTitles);
   protected selectedListId = this.store.selectSignal(selTodo_selectedListId);
-  protected mostUsedTags = this.store.selectSignal(selTodo_mostUsedTags);
+  protected tagStatsList = this.store.selectSignal(selTodo_tagStatsList);
 
   // list create form modal
   protected listCreateFormTemplateRef = viewChild.required<TemplateRef<{}>>('listCreateFormModalTemplate');

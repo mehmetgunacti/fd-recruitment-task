@@ -4,17 +4,17 @@ import { Store } from '@ngrx/store';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { AddTodoItemComponent } from 'src/app/components/add-todo-item/add-todo-item.component';
 import { DeleteListComponent } from 'src/app/components/delete-list/delete-list.component';
-import { TagInputComponent } from 'src/app/components/tag-input/tag-input.component';
 import { TagsComponent } from 'src/app/components/tags/tags.component';
 import { TodoItemComponent } from 'src/app/components/todo-item/todo-item.component';
+import { ItemDetailsFormComponent } from 'src/app/forms/item-details-form/item-details-form.component';
 import { ListUpdateFormComponent } from 'src/app/forms/list-update-form/list-update-form.component';
 import { todoActions } from 'src/app/store/actions/todo.actions';
-import { selTodo_listDeleteFormVisible, selTodo_lists, selTodo_listUpdateFormVisible, selTodo_priorityLevels, selTodo_selectedList } from 'src/app/store/selectors/todo.selectors';
+import { selTodo_itemDetailFormVisible, selTodo_listDeleteFormVisible, selTodo_lists, selTodo_listTitles, selTodo_listUpdateFormVisible, selTodo_priorityLevels, selTodo_selectedItem, selTodo_selectedList, selTodo_tagStatsList } from 'src/app/store/selectors/todo.selectors';
 import { CreateTodoItemCommand, TodoItemDto, TodoItemsClient, TodoListsClient, UpdateTodoListCommand } from 'src/app/web-api-client';
 
 @Component({
   selector: 'app-todo-list-container',
-  imports: [FormsModule, ReactiveFormsModule, TagInputComponent, ListUpdateFormComponent, TodoItemComponent, AddTodoItemComponent, DeleteListComponent, TagsComponent],
+  imports: [FormsModule, ReactiveFormsModule, ListUpdateFormComponent, TodoItemComponent, AddTodoItemComponent, DeleteListComponent, TagsComponent, ItemDetailsFormComponent],
   templateUrl: './todo-list.container.html',
   styleUrl: './todo-list.container.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -25,11 +25,14 @@ export class TodoListContainer {
   private modalService = inject(BsModalService);
 
   protected selectedList = this.store.selectSignal(selTodo_selectedList); // <-- empty?
-  protected selectedListAllTags = signal<string[]>([]);//  this.store.selectSignal(selTodo_selectedListAllTags);
-  
-  protected selectedListItems = computed(() => this.selectedList().items ?? []);
+  protected tagStatsList = this.store.selectSignal(selTodo_tagStatsList);
 
-  
+  protected selectedListItems = computed(() => this.selectedList().items ?? []);
+  protected selectedItem = this.store.selectSignal(selTodo_selectedItem);
+  protected listTitles = this.store.selectSignal(selTodo_listTitles);
+  protected priorityLevels = this.store.selectSignal(selTodo_priorityLevels);
+
+  protected tagSuggestions = signal<string[]>([]);
 
   // list update form modal
   protected listUpdateFormTemplateRef = viewChild.required<TemplateRef<{}>>('listOptionsModalTemplate');
@@ -40,6 +43,11 @@ export class TodoListContainer {
   protected listDeleteFormTemplateRef = viewChild.required<TemplateRef<{}>>('listDeleteModalTemplate');
   protected listDeleteFormVisible = this.store.selectSignal(selTodo_listDeleteFormVisible);
   protected listDeleteFormModalRef: BsModalRef | null;
+
+  // item detail form modal
+  protected itemDetailFormTemplateRef = viewChild.required<TemplateRef<{}>>('itemDetailsModalTemplate');
+  protected itemDetailFormVisible = this.store.selectSignal(selTodo_itemDetailFormVisible);
+  protected itemDetailFormModalRef: BsModalRef | null;
 
   constructor() {
 
@@ -69,25 +77,38 @@ export class TodoListContainer {
 
     });
 
+    // show / hide Item Detail Form
+    effect(() => {
+
+      const visible = this.itemDetailFormVisible();
+      if (visible)
+        this.itemDetailFormModalRef = this.modalService.show(this.itemDetailFormTemplateRef());
+      else {
+        this.itemDetailFormModalRef?.hide();
+        this.itemDetailFormModalRef = null;
+      }
+
+    });
+
   }
 
-  onItemAdd(title: string): void {
+  protected onItemAdd(title: string): void {
     this.store.dispatch(todoActions.addItem({ listId: this.selectedList().id, title }));
   }
 
-  onUpdateList(id: number, title: string): void {
+  protected onUpdateList(id: number, title: string): void {
     this.store.dispatch(todoActions.updateList({ id, title }));
   }
 
-  onOpenListUpdateForm(): void {
+  protected onOpenListUpdateForm(): void {
     this.store.dispatch(todoActions.openListUpdateForm());
   }
 
-  onCloseListUpdateForm(): void {
+  protected onCloseListUpdateForm(): void {
     this.store.dispatch(todoActions.closeListUpdateForm());
   }
 
-  onDeleteList(): void {
+  protected onDeleteList(): void {
     this.store.dispatch(todoActions.openListDeleteForm());
   }
 
@@ -99,8 +120,31 @@ export class TodoListContainer {
     console.log(id, newTitle, 'titleChange');
   }
 
-  protected onItemEdit(id: number): void {
-    console.log(id, 'edit');
+  protected onOpenItemDetailForm(id: number): void {
+    this.store.dispatch(todoActions.openItemDetailForm({ id }));
+  }
+
+  protected onItemDetailUpdate(dto: TodoItemDto): void {
+    this.store.dispatch(todoActions.updateItem({ dto }));
+  }
+  protected onItemDetailCancel(): void {
+    this.store.dispatch(todoActions.closeItemDetailForm());
+  }
+  protected onItemDetailDelete(): void {
+    console.log('item detail delete...');
+  }
+  protected onItemDetailTagInput(tag: string | null): void {
+
+    this.tagSuggestions.update(tags => {
+
+      if (!tag)
+        return [];
+      return this.tagStatsList()
+        .map(stat => stat.tag)
+        .filter(t => t.startsWith(tag));
+
+    });
+
   }
 
   protected onDeleteListConfirmed(): void {
@@ -126,121 +170,43 @@ export class TodoListContainer {
 
 
 
+  // updateItem(item: TodoItemDto, pressedEnter: boolean = false): void {
+  //   const isNewItem = item.id === 0;
 
-  private fb = inject(UntypedFormBuilder);
-  private itemsClient = inject(TodoItemsClient);
-  private listsClient = inject(TodoListsClient);
+  //   if (!item.title.trim()) {
+  //     // this.deleteItem(item);
+  //     return;
+  //   }
+
+  //   if (item.id === 0) {
+  //     this.itemsClient
+  //       .create({
+  //         ...item, listId: this.selectedList().id
+  //       } as CreateTodoItemCommand)
+  //       .subscribe(
+  //         result => {
+  //           item.id = result;
+  //         },
+  //         error => console.error(error)
+  //       );
+  //   } else {
+  //     this.itemsClient.update(item.id, item).subscribe(
+  //       () => console.log('Update succeeded.'),
+  //       error => console.error(error)
+  //     );
+  //   }
+
+  //   // this.selectedItem = null;
+
+  //   if (isNewItem && pressedEnter) {
+  //     setTimeout(() => this.addItem(), 250);
+  //   }
+  // }
 
 
 
-  // ------------------
-  listOptionsModalRef: BsModalRef;
-  itemDetailsModalRef: BsModalRef;
-  deleteListModalRef: BsModalRef;
-  listOptionsEditor: any = {};
-  itemDetailsFormGroup = this.fb.group({
-    id: [null],
-    listId: [null],
-    priority: [''],
-    note: [''],
-    bgColour: [null],
-    tagList: [[]]
-  });
-  lists = this.store.selectSignal(selTodo_lists);
-  priorityLevels = this.store.selectSignal(selTodo_priorityLevels);
-  tagSuggestions = [];
-  deleting = false;
-  deleteCountDown = 3;
-  deleteCountDownInterval: any;
-  // ------------------
 
-  showListOptionsModal(a: any): void { }
 
-  updateItem(item: TodoItemDto, pressedEnter: boolean = false): void {
-    const isNewItem = item.id === 0;
-
-    if (!item.title.trim()) {
-      // this.deleteItem(item);
-      return;
-    }
-
-    if (item.id === 0) {
-      this.itemsClient
-        .create({
-          ...item, listId: this.selectedList().id
-        } as CreateTodoItemCommand)
-        .subscribe(
-          result => {
-            item.id = result;
-          },
-          error => console.error(error)
-        );
-    } else {
-      this.itemsClient.update(item.id, item).subscribe(
-        () => console.log('Update succeeded.'),
-        error => console.error(error)
-      );
-    }
-
-    // this.selectedItem = null;
-
-    if (isNewItem && pressedEnter) {
-      setTimeout(() => this.addItem(), 250);
-    }
-  }
-
-  editItem(item: TodoItemDto, inputId: string): void {
-    // this.selectedItem = item;
-    setTimeout(() => document.getElementById(inputId).focus(), 100);
-  }
-
-  showItemDetailsModal(template: TemplateRef<any>, item: TodoItemDto): void {
-
-    // this.selectedItem = item;
-    this.itemDetailsFormGroup.reset();
-    // this.itemDetailsFormGroup.patchValue(this.selectedItem);
-
-    this.itemDetailsModalRef = this.modalService.show(template);
-    this.itemDetailsModalRef.onHidden.subscribe(() => {
-      // this.stopDeleteCountDown();
-    });
-
-  }
-
-  addItem() {
-    const item = {
-      id: 0,
-      listId: this.selectedList().id,
-      priority: this.priorityLevels[0].value,
-      title: '',
-      done: false
-    } as TodoItemDto;
-
-    this.selectedList().items.push(item);
-    const index = this.selectedList().items.length - 1;
-    this.editItem(item, 'itemTitle' + index);
-  }
-
-  updateListOptions() {
-    const list = this.listOptionsEditor as UpdateTodoListCommand;
-    this.listsClient.update(this.selectedList().id, list).subscribe(
-      () => {
-        (this.selectedList().title = this.listOptionsEditor.title),
-          this.listOptionsModalRef.hide();
-        this.listOptionsEditor = {};
-      },
-      error => console.error(error)
-    );
-  }
-
-  confirmDeleteList(template: TemplateRef<any>) {
-    this.listOptionsModalRef.hide();
-    this.deleteListModalRef = this.modalService.show(template);
-  }
-
-  onTagInput(tag: string) {
-    this.tagSuggestions = this.selectedListAllTags().filter(t => t.startsWith(tag));
-  }
 
   updateItemDetails(): void {
 
@@ -270,49 +236,38 @@ export class TodoListContainer {
 
   }
 
-  deleteItem(id: number, countDown?: boolean) { //item: TodoItemDto, countDown?: boolean) {
-    const item = {} as TodoItemDto;
-    if (countDown) {
-      if (this.deleting) {
-        // this.stopDeleteCountDown();
-        return;
-      }
-      this.deleteCountDown = 3;
-      this.deleting = true;
-      this.deleteCountDownInterval = setInterval(() => {
-        if (this.deleting && --this.deleteCountDown <= 0) {
-          // this.deleteItem(item, false);
-        }
-      }, 1000);
-      return;
-    }
-    this.deleting = false;
-    if (this.itemDetailsModalRef) {
-      this.itemDetailsModalRef.hide();
-    }
+  // deleteItem(id: number, countDown?: boolean) { //item: TodoItemDto, countDown?: boolean) {
+  //   const item = {} as TodoItemDto;
+  //   if (countDown) {
+  //     if (this.deleting) {
+  //       // this.stopDeleteCountDown();
+  //       return;
+  //     }
+  //     this.deleteCountDown = 3;
+  //     this.deleting = true;
+  //     this.deleteCountDownInterval = setInterval(() => {
+  //       if (this.deleting && --this.deleteCountDown <= 0) {
+  //         // this.deleteItem(item, false);
+  //       }
+  //     }, 1000);
+  //     return;
+  //   }
+  //   this.deleting = false;
+  //   if (this.itemDetailsModalRef) {
+  //     this.itemDetailsModalRef.hide();
+  //   }
 
-    if (item.id === 0) {
-      //const itemIndex = this.selectedList().items.indexOf(this.selectedItem());
-      //this.selectedList().items.splice(itemIndex, 1);
-    } else {
-      this.itemsClient.delete(item.id).subscribe(
-        () => (this.selectedList().items = this.selectedList().items.filter(t => t.id !== item.id)),
-        error => console.error(error)
-      );
-    }
-    // this.selectedListAllTags = reduceTags(this.selectedList().items);
-    this.itemDetailsFormGroup.reset();
-  }
-
-  deleteListConfirmed(): void {
-    this.listsClient.delete(this.selectedList().id).subscribe(
-      () => {
-        this.deleteListModalRef.hide();
-        // this.lists = this.lists.filter(t => t.id !== this.selectedList.id);
-        this.selectedList = this.lists.length ? this.lists[0] : null;
-      },
-      error => console.error(error)
-    );
-  }
+  //   if (item.id === 0) {
+  //     //const itemIndex = this.selectedList().items.indexOf(this.selectedItem());
+  //     //this.selectedList().items.splice(itemIndex, 1);
+  //   } else {
+  //     this.itemsClient.delete(item.id).subscribe(
+  //       () => (this.selectedList().items = this.selectedList().items.filter(t => t.id !== item.id)),
+  //       error => console.error(error)
+  //     );
+  //   }
+  //   // this.selectedListAllTags = reduceTags(this.selectedList().items);
+  //   // this.itemDetailsFormGroup.reset();
+  // }
 
 }
