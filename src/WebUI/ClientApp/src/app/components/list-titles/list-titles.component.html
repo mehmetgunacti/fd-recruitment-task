@@ -1,8 +1,8 @@
 <ul class="list-group">
 
-    @for (title of titles(); track $index) {
+    @for (title of titles() | sortByKey:'name'; track $index) {
 
-        @let isSelected = title.selected;
+        @let isSelected = title.id === selectedListId();
         <li class="list-group-item"
             role="button"
             [class.active]="isSelected"

@@ -3,16 +3,18 @@ import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/f
 import { Store } from '@ngrx/store';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { AddTodoItemComponent } from 'src/app/components/add-todo-item/add-todo-item.component';
+import { DeleteListComponent } from 'src/app/components/delete-list/delete-list.component';
 import { TagInputComponent } from 'src/app/components/tag-input/tag-input.component';
+import { TagsComponent } from 'src/app/components/tags/tags.component';
 import { TodoItemComponent } from 'src/app/components/todo-item/todo-item.component';
 import { ListUpdateFormComponent } from 'src/app/forms/list-update-form/list-update-form.component';
 import { todoActions } from 'src/app/store/actions/todo.actions';
-import { selTodo_lists, selTodo_listUpdateFormVisible, selTodo_priorityLevels, selTodo_selectedList, selTodo_selectedListAllTags } from 'src/app/store/selectors/todo.selectors';
+import { selTodo_listDeleteFormVisible, selTodo_lists, selTodo_listUpdateFormVisible, selTodo_priorityLevels, selTodo_selectedList } from 'src/app/store/selectors/todo.selectors';
 import { CreateTodoItemCommand, TodoItemDto, TodoItemsClient, TodoListsClient, UpdateTodoListCommand } from 'src/app/web-api-client';
 
 @Component({
   selector: 'app-todo-list-container',
-  imports: [FormsModule, ReactiveFormsModule, TagInputComponent, ListUpdateFormComponent, TodoItemComponent, AddTodoItemComponent],
+  imports: [FormsModule, ReactiveFormsModule, TagInputComponent, ListUpdateFormComponent, TodoItemComponent, AddTodoItemComponent, DeleteListComponent, TagsComponent],
   templateUrl: './todo-list.container.html',
   styleUrl: './todo-list.container.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -23,28 +25,46 @@ export class TodoListContainer {
   private modalService = inject(BsModalService);
 
   protected selectedList = this.store.selectSignal(selTodo_selectedList); // <-- empty?
-  protected selectedListAllTags = this.store.selectSignal(selTodo_selectedListAllTags);
-
+  protected selectedListAllTags = signal<string[]>([]);//  this.store.selectSignal(selTodo_selectedListAllTags);
+  
   protected selectedListItems = computed(() => this.selectedList().items ?? []);
 
-  protected selectedTag = signal<string | null>(null);
+  
 
   // list update form modal
   protected listUpdateFormTemplateRef = viewChild.required<TemplateRef<{}>>('listOptionsModalTemplate');
   protected listUpdateFormVisible = this.store.selectSignal(selTodo_listUpdateFormVisible);
   protected listUpdateFormModalRef: BsModalRef | null;
 
+  // list delete form modal
+  protected listDeleteFormTemplateRef = viewChild.required<TemplateRef<{}>>('listDeleteModalTemplate');
+  protected listDeleteFormVisible = this.store.selectSignal(selTodo_listDeleteFormVisible);
+  protected listDeleteFormModalRef: BsModalRef | null;
+
   constructor() {
 
+    // show / hide List Update Form
     effect(() => {
 
-      // show / hide list update form
       const visible = this.listUpdateFormVisible();
       if (visible)
         this.listUpdateFormModalRef = this.modalService.show(this.listUpdateFormTemplateRef());
       else {
         this.listUpdateFormModalRef?.hide();
         this.listUpdateFormModalRef = null;
+      }
+
+    });
+
+    // show / hide List Delete Form
+    effect(() => {
+
+      const visible = this.listDeleteFormVisible();
+      if (visible)
+        this.listDeleteFormModalRef = this.modalService.show(this.listDeleteFormTemplateRef());
+      else {
+        this.listDeleteFormModalRef?.hide();
+        this.listDeleteFormModalRef = null;
       }
 
     });
@@ -67,6 +87,10 @@ export class TodoListContainer {
     this.store.dispatch(todoActions.closeListUpdateForm());
   }
 
+  onDeleteList(): void {
+    this.store.dispatch(todoActions.openListDeleteForm());
+  }
+
   protected onItemStateChanged({ id, newState }: { id: number, newState: boolean }): void {
     console.log(id, newState, 'stateChange');
   }
@@ -77,6 +101,17 @@ export class TodoListContainer {
 
   protected onItemEdit(id: number): void {
     console.log(id, 'edit');
+  }
+
+  protected onDeleteListConfirmed(): void {
+    this.store.dispatch(todoActions.deleteList({ id: this.selectedList().id }));
+  }
+  protected onDeleteListRejected(): void {
+    this.store.dispatch(todoActions.closeListDeleteForm());
+  }
+
+  protected onTagSelected(tag: string): void {
+    console.log('tag selected', tag);
   }
 
 
@@ -120,12 +155,6 @@ export class TodoListContainer {
   // ------------------
 
   showListOptionsModal(a: any): void { }
-
-  selectTag(tag: string): void {
-
-    this.selectedTag.set(tag);
-
-  }
 
   updateItem(item: TodoItemDto, pressedEnter: boolean = false): void {
     const isNewItem = item.id === 0;

@@ -21,7 +21,7 @@
         </div>
 
         <!-- LIST TITLES -->
-        <app-list-titles [titles]="listTitles()" (titleClicked)="onSelectList($event)"/>
+        <app-list-titles [titles]="listTitles()" [selectedListId]="selectedListId()" (titleClicked)="onSelectList($event)"/>
 
         <!-- SEARCH -->
         <app-search-box (search)="onSearch($event)" class="d-block pt-2"/>
