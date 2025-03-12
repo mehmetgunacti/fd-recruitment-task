@@ -71,6 +71,25 @@ export class TodoEffects {
 
     );
 
+    deleteList$ = createEffect(
+
+        () => this.actions$.pipe(
+
+            ofType(todoActions.deleteList),
+            exhaustMap(
+
+                ({ id }) => this.listsClient.delete(id).pipe(
+
+                    map(() => todoActions.deleteListSuccess({ id })),
+                    catchError((error) => of(todoActions.deleteListFailure({ error: JSON.parse(error.response) })))
+
+                )
+            ),
+
+        )
+
+    );
+
     addItem$ = createEffect(
 
         () => this.actions$.pipe(

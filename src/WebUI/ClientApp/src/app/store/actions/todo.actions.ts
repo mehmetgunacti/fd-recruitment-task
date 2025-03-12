@@ -17,6 +17,10 @@ export const todoActions = createActionGroup({
         openListUpdateForm : emptyProps(),
         closeListUpdateForm: emptyProps(),
 
+        // List Delete Form
+        openListDeleteForm : emptyProps(),
+        closeListDeleteForm: emptyProps(),
+
         getLists        : emptyProps(),
         getListsSuccess : props<{ vm: TodosVm }>(),
         getListsFailure : props<{ error: string }>(),
@@ -31,7 +35,12 @@ export const todoActions = createActionGroup({
         updateListSuccess  : props<{ id: number, title: string }>(),
         updateListFailure  : props<{ error: string }>(),
 
-        // add item
+        // delete list dto
+        deleteList         : props<{ id: number }>(),
+        deleteListSuccess  : props<{ id: number }>(),
+        deleteListFailure  : props<{ error: string }>(),
+
+        // add item dto
         addItem         : props<{ listId: number, title: string }>(),
         addItemSuccess  : props<{ listId: number, id: number, title: string }>(),
         addItemFailure  : props<{ error: string }>(),

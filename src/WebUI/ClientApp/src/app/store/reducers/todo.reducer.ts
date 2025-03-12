@@ -28,6 +28,15 @@ const reducer = createReducer(
 	on(todoActions.openListCreateForm, (state): TodoModuleState => ({ ...state, listCreateFormVisible: true })),
 	on(todoActions.closeListCreateForm, (state): TodoModuleState => ({ ...state, listCreateFormVisible: false })),
 
+	// List update
+	on(todoActions.openListUpdateForm, (state): TodoModuleState => ({ ...state, listUpdateFormVisible: true })),
+	on(todoActions.closeListUpdateForm, (state): TodoModuleState => ({ ...state, listUpdateFormVisible: false })),
+
+	// List delete
+	on(todoActions.openListDeleteForm, (state): TodoModuleState => ({ ...state, listDeleteFormVisible: true, listUpdateFormVisible: false })),
+	on(todoActions.closeListDeleteForm, (state): TodoModuleState => ({ ...state, listDeleteFormVisible: false })),
+
+
 	on(todoActions.addListSuccess, (state, { dto }): TodoModuleState => {
 
 		return produce(
@@ -44,10 +53,6 @@ const reducer = createReducer(
 
 	}),
 	on(todoActions.addListFailure, (state, { error }): TodoModuleState => ({ ...state, listCreateFormError: error })),
-
-	// List update
-	on(todoActions.openListUpdateForm, (state): TodoModuleState => ({ ...state, listUpdateFormVisible: true })),
-	on(todoActions.closeListUpdateForm, (state): TodoModuleState => ({ ...state, listUpdateFormVisible: false })),
 
 	on(todoActions.updateListSuccess, (state, { id, title }): TodoModuleState => {
 
@@ -67,6 +72,24 @@ const reducer = createReducer(
 
 	}),
 	on(todoActions.updateListFailure, (state, { error }): TodoModuleState => ({ ...state, listUpdateFormError: error })),
+
+	on(todoActions.deleteListSuccess, (state, { id }): TodoModuleState => {
+
+		return produce(
+
+			state,
+			draft => {
+
+				delete draft.entities[id];
+				draft.selectedListId = null;
+				draft.listDeleteFormVisible = false;
+
+			}
+
+		);
+
+	}),
+	on(todoActions.deleteListFailure, (state, { error }): TodoModuleState => ({ ...state, listDeleteFormError: error })),
 
 	on(todoActions.addItemSuccess, (state, { listId, id, title }): TodoModuleState => {
 

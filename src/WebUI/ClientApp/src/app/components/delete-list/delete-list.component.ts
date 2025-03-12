@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, OnDestroy, output } from '@angular/core';
 import { TodoListDto } from 'src/app/web-api-client';
 
 @Component({
@@ -8,7 +8,7 @@ import { TodoListDto } from 'src/app/web-api-client';
   styleUrl: './delete-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DeleteListComponent {
+export class DeleteListComponent implements OnDestroy {
 
   // Input
   list = input.required<TodoListDto>();
@@ -16,6 +16,10 @@ export class DeleteListComponent {
   // Output
   confirmed = output<void>();
   rejected = output<void>();
+
+  ngOnDestroy(): void {
+    this.rejected.emit();
+  }
 
   protected onConfirmed(): void {
     this.confirmed.emit();

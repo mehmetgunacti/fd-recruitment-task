@@ -15,6 +15,9 @@ export interface TodoModuleState {
     listUpdateFormVisible: boolean;
     listUpdateFormError: string | null;
 
+    listDeleteFormVisible: boolean;
+    listDeleteFormError: string | null;
+
     addItemError: string | null;
 
 }
@@ -32,6 +35,9 @@ export const todo_initialState: TodoModuleState = {
 
     listUpdateFormVisible: false,
     listUpdateFormError: null,
+
+    listDeleteFormVisible: false,
+    listDeleteFormError: null,
 
     addItemError: null
 

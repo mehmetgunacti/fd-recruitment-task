@@ -9,7 +9,7 @@ const selTodo_ModuleState = createFeatureSelector<TodoModuleState>('todo');
 export const selTodo_lists = createSelector(
 
     selTodo_ModuleState,
-    state => Object.values(state.entities).sort((a, b) => a.title < b.title ? -1 : 1)
+    state => Object.values(state.entities)
 
 );
 
@@ -38,27 +38,20 @@ export const selTodo_selectedList = createSelector(
 
     selTodo_lists,
     selTodo_selectedListId,
-    (lists, selectedListId) => lists.find(list => list.id === selectedListId)
+    (lists, selectedListId) => lists.find(list => list.id === selectedListId) ?? lists.at(0)
 
 );
 
 export const selTodo_listTitles = createSelector(
 
     selTodo_lists,
-    selTodo_selectedListId,
-    (lists, selectedListId) => {
+    lists => lists.map((dto): ListTitle => ({
 
-        const titles: ListTitle[] = lists.map(dto => ({
+        id: dto.id,
+        name: dto.title,
+        count: dto.items.filter(t => !t.done).length
 
-            id: dto.id,
-            name: dto.title,
-            count: dto.items.filter(t => !t.done).length,
-            selected: dto.id === selectedListId
-
-        }));
-        return titles;
-
-    }
+    }))
 
 );
 
@@ -103,26 +96,6 @@ export const selTodo_searchTerm = createSelector(
 
 );
 
-export const selTodo_selectedListAllTags = createSelector(
-
-    selTodo_selectedList,
-    list => {
-
-        if (!list.items)
-            return [];
-
-        const uniqueTags = new Set<string>(
-            list.items
-                .map(item => item.tagList || [])
-                .reduce((acc, cur) => acc.concat(cur), [])
-        );
-
-        return Array.from(uniqueTags);
-
-    }
-
-);
-
 export const selTodo_listCreateFormVisible = createSelector(
 
     selTodo_ModuleState,
@@ -134,6 +107,13 @@ export const selTodo_listUpdateFormVisible = createSelector(
 
     selTodo_ModuleState,
     state => state.listUpdateFormVisible
+
+);
+
+export const selTodo_listDeleteFormVisible = createSelector(
+
+    selTodo_ModuleState,
+    state => state.listDeleteFormVisible
 
 );
 
