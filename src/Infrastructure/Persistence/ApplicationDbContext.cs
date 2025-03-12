@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Reflection.Emit;
 using Duende.IdentityServer.EntityFramework.Options;
 using MediatR;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
@@ -33,7 +34,11 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        builder.Entity<TodoList>().HasQueryFilter(t => !t.IsDeleted);
+        builder.Entity<TodoItem>().HasQueryFilter(t => !t.IsDeleted);
 
         base.OnModelCreating(builder);
     }
