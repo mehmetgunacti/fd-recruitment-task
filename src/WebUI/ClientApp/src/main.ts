@@ -9,6 +9,7 @@ import { HomePage } from './app/pages/home-page/home.page';
 import { TodoPage } from './app/pages/todo-page/todo.page';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
 import * as store from './app/store/store.config';
 
 export function getBaseUrl() {
@@ -29,6 +30,7 @@ const appConfig: ApplicationConfig = {
     { provide: 'BASE_URL', useFactory: getBaseUrl, deps: [] },
     provideStore(store.reducerList, { metaReducers: store.metaReducers }),
 		provideEffects(store.effectList),
+    provideStoreDevtools(),
     importProvidersFrom([ModalModule.forRoot()])
   ],
 
