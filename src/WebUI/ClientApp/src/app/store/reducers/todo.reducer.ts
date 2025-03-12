@@ -129,6 +129,8 @@ const reducer = createReducer(
 
 				if (items.length) {
 
+					// - refactoring of store layout needed, items should be stored separately, updating items would be easy
+					// - bug: on item listId update, not removing from old list, check most used tags, ..
 					const curItems = items.filter(item => item.id !== dto.id);
 					draft.entities[listId] = TodoListDto.fromJS({
 						...listDto,
