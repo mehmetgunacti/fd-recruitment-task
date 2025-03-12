@@ -1,5 +1,4 @@
 <h1>Todo</h1>
-
 <p>This is a complex todo list component.</p>
 
 @if (loading()) {
@@ -9,7 +8,6 @@
 } @else {
 
     <div class="row">
-
       <div class="col-sm-4">
 
         <!-- LIST TITLES HEADER -->
@@ -17,7 +15,7 @@
           <h2>Lists</h2>
           <button class="btn btn-default"
                   title="New List..."
-                  (click)="showNewListModal(newListModalTemplate)">
+                  (click)="onOpenListCreateModal()">
             <i class="bi bi-journal-plus"></i>
           </button>
         </div>
@@ -33,319 +31,18 @@
 
       </div>
 
-      @if (selectedList) {
-
-        <div class="col-sm-8">
-          <div>
-            <h2>{{ selectedList.title }}</h2>
-            <button id="listOptions" class="btn btn-default float-end" title="List Options..."
-                    (click)="showListOptionsModal(listOptionsModalTemplate)">
-              <i class="bi bi-three-dots-vertical"></i>
-            </button>
-          </div>
-
-          <!-- Tags -->
-          @if (selectedListAllTags.length > 0) {
-
-            <div class="d-flex align-items-center flex-wrap gap-1 form-group mb-1">
-
-              <i class="bi bi-tags"></i>
-              @for (tag of selectedListAllTags; track $index) {
-                <span class="badge rounded-pill form-control w-auto"
-                      [class.bg-secondary]="selectedTag !== null && selectedTag !== tag"
-                      [class.bg-primary]="selectedTag === null || selectedTag === tag"
-                      (click)="selectTag(tag)"
-                      (keydown.Enter)="selectTag(tag)"
-                      role="button"
-                      tabindex="0">
-                  {{tag}}
-                </span>
-              }
-              <i class="bi bi-filter ms-auto"></i>
-
-            </div>
-
-          }
-
-          <!-- Items -->
-          <ul id="todo-items" class="list-group mb-2">
-
-            @for(item of selectedItems; track $index) {
-
-              <li class="list-group-item" [style.backgroundColor]="item.bgColour">
-                <div class="d-flex">
-                  <div class="todo-item-checkbox">
-                    <input type="checkbox" [(ngModel)]="item.done" (change)="updateItem(item)" />
-                  </div>
-                  <div class="flex-fill">
-
-                    @if (item === selectedItem) {
-                      <input  id="{{ 'itemTitle' + $index }}"
-                              type="text"
-                              class="form-control item-input-control"
-                              [(ngModel)]="item.title"
-                              (keyup.enter)="updateItem(item, true)"
-                              (blur)="updateItem(item)"
-                              autofocus="autofocus" />
-                    } @else {
-
-                      <div  class="todo-item-title"
-                            [ngClass]="{ 'done-todo': item.done }"
-                            (click)="editItem(item, 'itemTitle' + $index)"
-                            class="form-control item-input-control">
-                          <span>{{ item.title }}</span>
-                      </div>
-
-                    }
-                    
-                  </div>
-                  <div class="todo-item-commands">
-
-                    @if (item.id !== 0) {
-
-                      <button (click)="showItemDetailsModal(itemDetailsModalTemplate, item)"
-                              class="btn btn-default btn-xs"
-                              role="button">
-                        <i class="bi bi-three-dots-vertical"></i>
-                      </button>
-
-                    }
-
-                  </div>
-                </div>
-              </li>
-
-            }
-            <li class="list-group-item" (click)="addItem()">
-              <button class="btn btn-default">Add Item...</button>
-            </li>
-          </ul>
-        </div>
-
-      }
+      <!-- TODO LIST CONTAINER -->
+      <div class="col-sm-8">
+        <app-todo-list-container/>
+      </div>
 
     </div>
 
 }
-
-@if (debug) {
-
-  <div>
-    <pre>{{ lists() | json }}</pre>
-  </div>
-
-}
-
-<!-- LIST OPTIONS MODAL -->
-<ng-template #listOptionsModalTemplate>
-
-  <!-- MODAL HEADER -->
-  <div class="modal-header">
-    <h4 class="modal-title pull-left">List Options</h4>
-    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="listOptionsModalRef.hide()">
-      <span aria-hidden="true" class="visually-hidden">&times;</span>
-    </button>
-  </div>
-
-  <!-- MODAL BODY -->
-  <div class="modal-body">
-    <div class="form-group">
-      <label for="inputListTitle">Title</label>
-      <input  type="text"
-              class="form-control"
-              id="inputListTitle"
-              placeholder="List name..."
-              [(ngModel)]="listOptionsEditor.title"
-              (keyup.enter)="updateListOptions()" />
-    </div>
-
-    @if (debug) {
-
-      <div>
-        <pre>{{ listOptionsEditor | json }}</pre>
-      </div>
-
-    }
-
-  </div>
-
-  <!-- MODAL FOOTER -->
-  <div class="modal-footer">
-    <div>
-      <div>
-        <button class="btn btn-default text-danger" (click)="confirmDeleteList(deleteListModalTemplate)">Delete</button>
-      </div>
-      <div>
-        <button class="btn btn-default" (click)="listOptionsModalRef.hide()">Cancel</button>
-        <button class="btn btn-primary" (click)="updateListOptions()">Update</button>
-      </div>
-    </div>
-  </div>
-
-</ng-template>
-
-<!-- ITEM DETAILS MODAL -->
-<ng-template #itemDetailsModalTemplate>
-
-  <!-- MODAL HEADER -->
-  <div class="modal-header">
-    <h4 class="modal-title pull-left">Item Details</h4>
-    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="itemDetailsModalRef.hide()">
-      <span aria-hidden="true" class="visually-hidden">&times;</span>
-    </button>
-  </div>
-
-  <!-- MODAL BODY -->
-  <div class="modal-body">
-    <form [formGroup]="itemDetailsFormGroup" class="form">
-      <div class="form-group">
-        <label for="list">List</label>
-        <select class="form-control" formControlName="listId">
-
-          @for (list of lists(); track $index) {
-
-            <option [ngValue]="list.id">{{ list.title }}</option>
-
-          }
-
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="priority">Priority</label>
-        <select class="form-control" formControlName="priority">
-
-          @for (level of priorityLevels; track $index) {
-
-            <option [ngValue]="level.value">{{ level.name }}</option>
-
-          }
-
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="note">Note</label>
-        <textarea id="note" class="form-control" rows="3" formControlName="note"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Tags</label>
-        <app-tag-input formControlName="tagList"
-                       [suggestions]="tagSuggestions"
-                       (tagInput)="onTagInput($event)"></app-tag-input>
-      </div>
-      <div class="form-group">
-        <label for="note">Colour</label>
-        <app-colour-picker formControlName="bgColour" class="form-control"></app-colour-picker>
-      </div>
-    </form>
-
-    @if (debug) {
-
-      <div>
-        <pre>{{ itemDetailsFormGroup.value | json }}</pre>
-      </div>
-
-    }
-  </div>
-
-  <!-- MODAL FOOTER -->
-  <div class="modal-footer">
-    <div>
-      <div>
-        <button class="btn btn-default text-danger" (click)="deleteItem(selectedItem, true)">{{deleting ? 'Deleting ' + deleteCountDown + ' ...' : 'Delete'}}</button>
-      </div>
-      <div>
-        <button class="btn btn-default" (click)="itemDetailsModalRef.hide()">Cancel</button>
-        <button class="btn btn-primary" (click)="updateItemDetails()">Update</button>
-      </div>
-    </div>
-  </div>
-
-</ng-template>
-
-<!-- DELETE LIST MODAL -->
-<ng-template #deleteListModalTemplate>
-
-  <!-- MODAL HEADER -->
-  <div class="modal-header">
-    <h4 class="modal-title pull-left">Delete "{{ selectedList?.title }}"?</h4>
-    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="deleteListModalRef.hide()">
-      <span aria-hidden="true" class="visually-hidden">&times;</span>
-    </button>
-  </div>
-
-  <!-- MODAL BODY -->
-  <div class="modal-body">
-    <p>All items will be permanently deleted. </p>
-
-    @if (debug) {
-
-      <div>
-        <pre>{{ selectedList | json }}</pre>
-      </div>
-
-    }
-
-  </div>
-
-  <!-- MODAL FOOTER -->
-  <div class="modal-footer clearfix">
-    <div>
-      <button type="button" class="btn btn-default" (click)="deleteListModalRef.hide()">Cancel</button>
-      <button type="button" class="btn btn-danger" (click)="deleteListConfirmed()">Delete</button>
-    </div>
-  </div>
-
-</ng-template>
 
 <!-- NEW LIST MODAL -->
-<ng-template #newListModalTemplate>
+<ng-template #listCreateFormModalTemplate>
 
-  <!-- MODAL HEADER -->
-  <div class="modal-header">
-    <h4 class="modal-title pull-left">New List</h4>
-    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="newListCancelled()">
-      <span aria-hidden="true" class="visually-hidden">&times;</span>
-    </button>
-  </div>
-
-  <!-- MODAL BODY -->
-  <div class="modal-body">
-    <div class="form-group">
-      <label for="title">Title</label>
-      <input  type="text"
-              class="form-control"
-              id="title"
-              placeholder="List title..."
-              [(ngModel)]="newListEditor.title"
-              [ngClass]="{ 'is-invalid': newListEditor.error }"
-              (keyup.enter)="addList()" />
-
-      @if (newListEditor.error) {
-
-        <div class="invalid-feedback">
-          {{ newListEditor.error }}
-        </div>
-
-      }
-
-    </div>
-
-    @if (debug) {
-
-      <div>
-        <pre>{{ newListEditor | json }}</pre>
-      </div>
-
-    }
-
-  </div>
-
-  <!-- MODAL FOOTER -->
-  <div class="modal-footer clearfix">
-    <div>
-      <button class="btn btn-default" (click)="newListCancelled()">Cancel</button>
-      <button class="btn btn-primary" (click)="addList()">Create</button>
-    </div>
-  </div>
+  <app-new-list-form [error]="null" (add)="onAddList($event)" (cancel)="onCloseListCreateForm()"/>
 
 </ng-template>

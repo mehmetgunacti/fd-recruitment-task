@@ -2,13 +2,14 @@ import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { ListTitle } from 'src/app/components/list-titles/list-titles.component';
 import { TagStat } from 'src/app/components/most-used-tags/most-used-tags.component';
 import { TodoModuleState } from '../states/todo.state';
+import { TodoItemDto } from 'src/app/web-api-client';
 
 const selTodo_ModuleState = createFeatureSelector<TodoModuleState>('todo');
 
 export const selTodo_lists = createSelector(
 
     selTodo_ModuleState,
-    state => state.lists
+    state => Object.values(state.entities)
 
 );
 
@@ -101,3 +102,69 @@ export const selTodo_searchTerm = createSelector(
     state => state.searchTerm
 
 );
+
+export const selTodo_selectedListAllTags = createSelector(
+
+    selTodo_selectedList,
+    list => {
+
+        if (!list.items)
+            return [];
+
+        const uniqueTags = new Set<string>(
+            list.items
+                .map(item => item.tagList || [])
+                .reduce((acc, cur) => acc.concat(cur), [])
+        );
+
+        return Array.from(uniqueTags);
+
+    }
+
+);
+
+export const selTodo_listCreateFormVisible = createSelector(
+
+    selTodo_ModuleState,
+    state => state.listCreateFormVisible
+
+);
+
+export const selTodo_listUpdateFormVisible = createSelector(
+
+    selTodo_ModuleState,
+    state => state.listUpdateFormVisible
+
+);
+
+function search(val: string): void {
+
+    this.selectedTag = null;
+    const term = val.trim().toLowerCase();
+    if (term.length === 0)
+        this.selectedItems = this.selectedList?.items ?? [];
+    else
+        this.selectedItems = this.selectedList?.items?.filter(item => (item.title ?? '').toLowerCase().indexOf(term) >= 0) ?? [];
+
+}
+
+function reduceTags(items?: TodoItemDto[]): string[] {
+
+  if (!items)
+    return [];
+
+  const uniqueTags = new Set<string>(
+    items
+      .map(item => item.tagList || [])
+      .reduce((acc, cur) => acc.concat(cur), [])
+  );
+
+  return Array.from(uniqueTags);
+
+}
+
+function filterItems(tag: string, items?: TodoItemDto[]): TodoItemDto[] {
+
+  return items?.filter(item => item.tagList?.includes(tag)) ?? [];
+
+}

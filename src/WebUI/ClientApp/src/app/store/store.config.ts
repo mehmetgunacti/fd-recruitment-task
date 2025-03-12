@@ -2,8 +2,13 @@ import { ActionReducer, ActionReducerMap, MetaReducer } from "@ngrx/store";
 import { AppState } from "./states/app.state";
 import { todoReducer } from "./reducers/todo.reducer";
 import { environment } from "src/environments/environment";
+import { TodoEffects } from "./effects/todo.effects";
 
-export const effectList = [];
+export const effectList = [
+
+    TodoEffects
+
+];
 
 export const reducerList: ActionReducerMap<AppState> = {
 
@@ -32,4 +37,4 @@ export function debug(reducer: ActionReducer<any>): ActionReducer<any> {
 
 }
 
-export const metaReducers: MetaReducer<AppState>[] = environment.production ? [] : [debug];
+export const metaReducers: MetaReducer<AppState>[] = []; //  environment.production ? [] : [debug];
