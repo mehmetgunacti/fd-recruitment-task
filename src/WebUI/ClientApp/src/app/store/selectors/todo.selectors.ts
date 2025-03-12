@@ -9,7 +9,7 @@ const selTodo_ModuleState = createFeatureSelector<TodoModuleState>('todo');
 export const selTodo_lists = createSelector(
 
     selTodo_ModuleState,
-    state => Object.values(state.entities)
+    state => Object.values(state.entities).sort((a, b) => a.title < b.title ? -1 : 1)
 
 );
 
@@ -150,21 +150,21 @@ function search(val: string): void {
 
 function reduceTags(items?: TodoItemDto[]): string[] {
 
-  if (!items)
-    return [];
+    if (!items)
+        return [];
 
-  const uniqueTags = new Set<string>(
-    items
-      .map(item => item.tagList || [])
-      .reduce((acc, cur) => acc.concat(cur), [])
-  );
+    const uniqueTags = new Set<string>(
+        items
+            .map(item => item.tagList || [])
+            .reduce((acc, cur) => acc.concat(cur), [])
+    );
 
-  return Array.from(uniqueTags);
+    return Array.from(uniqueTags);
 
 }
 
 function filterItems(tag: string, items?: TodoItemDto[]): TodoItemDto[] {
 
-  return items?.filter(item => item.tagList?.includes(tag)) ?? [];
+    return items?.filter(item => item.tagList?.includes(tag)) ?? [];
 
 }

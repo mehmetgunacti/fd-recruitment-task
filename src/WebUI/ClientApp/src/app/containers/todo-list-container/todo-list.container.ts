@@ -2,16 +2,17 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, T
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { AddTodoItemComponent } from 'src/app/components/add-todo-item/add-todo-item.component';
 import { TagInputComponent } from 'src/app/components/tag-input/tag-input.component';
 import { TodoItemComponent } from 'src/app/components/todo-item/todo-item.component';
 import { ListUpdateFormComponent } from 'src/app/forms/list-update-form/list-update-form.component';
 import { todoActions } from 'src/app/store/actions/todo.actions';
 import { selTodo_lists, selTodo_listUpdateFormVisible, selTodo_priorityLevels, selTodo_selectedList, selTodo_selectedListAllTags } from 'src/app/store/selectors/todo.selectors';
-import { CreateTodoItemCommand, TodoItemDto, TodoItemsClient, TodoListsClient, UpdateTodoItemDetailCommand, UpdateTodoListCommand } from 'src/app/web-api-client';
+import { CreateTodoItemCommand, TodoItemDto, TodoItemsClient, TodoListsClient, UpdateTodoListCommand } from 'src/app/web-api-client';
 
 @Component({
   selector: 'app-todo-list-container',
-  imports: [FormsModule, ReactiveFormsModule, TagInputComponent, ListUpdateFormComponent, TodoItemComponent],
+  imports: [FormsModule, ReactiveFormsModule, TagInputComponent, ListUpdateFormComponent, TodoItemComponent, AddTodoItemComponent],
   templateUrl: './todo-list.container.html',
   styleUrl: './todo-list.container.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -48,6 +49,10 @@ export class TodoListContainer {
 
     });
 
+  }
+
+  onItemAdd(title: string): void {
+    this.store.dispatch(todoActions.addItem({ listId: this.selectedList().id, title }));
   }
 
   onUpdateList(id: number, title: string): void {
@@ -236,7 +241,7 @@ export class TodoListContainer {
 
   }
 
-  deleteItem(id: number, countDown?:boolean) { //item: TodoItemDto, countDown?: boolean) {
+  deleteItem(id: number, countDown?: boolean) { //item: TodoItemDto, countDown?: boolean) {
     const item = {} as TodoItemDto;
     if (countDown) {
       if (this.deleting) {

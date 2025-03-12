@@ -46,8 +46,8 @@
     </li>
 
   }
-  <li class="list-group-item" (click)="addItem()">
-    <button class="btn btn-default">Add Item...</button>
+  <li class="list-group-item">
+    <app-add-todo-item (add)="onItemAdd($event)" />
   </li>
 </ul>
 

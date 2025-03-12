@@ -1,6 +1,6 @@
 import { Action, createReducer, on } from '@ngrx/store';
 import { produce } from 'immer';
-import { PriorityLevelDto, TodoListDto } from 'src/app/web-api-client';
+import { PriorityLevelDto, TodoItemDto, TodoListDto } from 'src/app/web-api-client';
 import { todoActions } from '../actions/todo.actions';
 import { todo_initialState, TodoModuleState } from '../states/todo.state';
 
@@ -67,6 +67,27 @@ const reducer = createReducer(
 
 	}),
 	on(todoActions.updateListFailure, (state, { error }): TodoModuleState => ({ ...state, listUpdateFormError: error })),
+
+	on(todoActions.addItemSuccess, (state, { listId, id, title }): TodoModuleState => {
+
+		return produce(
+
+			state,
+			draft => {
+
+				const listDto: TodoListDto = draft.entities[listId];
+				const items: TodoItemDto[] = listDto.items ?? [];
+				draft.entities[listId] = TodoListDto.fromJS({
+					...listDto,
+					items: [...items, TodoItemDto.fromJS({ listId, id, title, priority: 0, tagList: [] })]
+				});
+
+			}
+
+		);
+
+	}),
+	on(todoActions.addItemFailure, (state, { error }): TodoModuleState => ({ ...state, addItemError: error })),
 
 );
 

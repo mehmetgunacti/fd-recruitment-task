@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map, switchMap } from 'rxjs/operators';
-import { CreateTodoListCommand, TodoListDto, TodoListsClient, UpdateTodoListCommand } from 'src/app/web-api-client';
+import { CreateTodoItemCommand, CreateTodoListCommand, TodoItemsClient, TodoListDto, TodoListsClient, UpdateTodoListCommand } from 'src/app/web-api-client';
 import { todoActions } from '../actions/todo.actions';
 
 @Injectable()
@@ -10,6 +10,7 @@ export class TodoEffects {
 
     private actions$: Actions = inject(Actions);
     private listsClient = inject(TodoListsClient);
+    private itemsClient = inject(TodoItemsClient);
 
     getLists$ = createEffect(
 
@@ -37,7 +38,7 @@ export class TodoEffects {
             ofType(todoActions.addList),
             exhaustMap(
 
-                ({ title }) => this.listsClient.create(new CreateTodoListCommand({ title })).pipe(
+                ({ title }) => this.listsClient.create(CreateTodoListCommand.fromJS({ title })).pipe(
 
                     map(id => todoActions.addListSuccess({
                         dto: new TodoListDto({ id, title, items: [] })
@@ -58,10 +59,29 @@ export class TodoEffects {
             ofType(todoActions.updateList),
             exhaustMap(
 
-                ({ id, title }) => this.listsClient.update(id, new UpdateTodoListCommand({ id, title })).pipe(
+                ({ id, title }) => this.listsClient.update(id, UpdateTodoListCommand.fromJS({ id, title })).pipe(
 
                     map(() => todoActions.updateListSuccess({ id, title })),
                     catchError((error) => of(todoActions.updateListFailure({ error: JSON.parse(error.response) })))
+
+                )
+            ),
+
+        )
+
+    );
+
+    addItem$ = createEffect(
+
+        () => this.actions$.pipe(
+
+            ofType(todoActions.addItem),
+            exhaustMap(
+
+                ({ listId, title }) => this.itemsClient.create(CreateTodoItemCommand.fromJS({ listId, title })).pipe(
+
+                    map(id => todoActions.addItemSuccess({ listId, id, title })),
+                    catchError((error) => of(todoActions.addItemFailure({ error: JSON.parse(error.response) })))
 
                 )
             ),
