@@ -112,11 +112,6 @@ export class TodoListContainer {
     this.store.dispatch(todoActions.openListDeleteForm());
   }
 
-
-  protected onItemTitleChanged({ id, newTitle }: { id: number, newTitle: string }): void {
-    
-  }
-
   protected onOpenItemDetailForm(id: number): void {
     this.store.dispatch(todoActions.openItemDetailForm({ id }));
   }
@@ -135,8 +130,8 @@ export class TodoListContainer {
     this.store.dispatch(todoActions.closeItemDetailForm());
   }
 
-  protected onItemDetailDelete(): void {
-    console.log('item detail delete...');
+  protected onItemDetailDelete(dto: TodoItemDto): void {
+    this.store.dispatch(todoActions.deleteItem({ dto }));
   }
 
   protected onItemDetailTagInput(tag: string | null): void {

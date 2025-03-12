@@ -24,17 +24,21 @@ export class ItemDetailsFormComponent implements OnDestroy {
   // Output
   update = output<TodoItemDto>();
   cancel = output<void>();
-  delete = output<number>();
+  delete = output<TodoItemDto>();
   tagInput = output<string | null>();
 
   constructor() {
 
     effect(() => {
 
-      const { id, listId, priority, note, bgColour, tagList } = this.item();
-      this.fg.patchValue({
-        id, listId, priority, note, bgColour, tagList
-      });
+      if (this.item()) { // is null when deleted, but this effect is not destroyed yet
+
+        const { id, listId, priority, note, bgColour, tagList } = this.item();
+        this.fg.patchValue({
+          id, listId, priority, note, bgColour, tagList
+        });
+
+      }
 
     });
 
@@ -66,7 +70,7 @@ export class ItemDetailsFormComponent implements OnDestroy {
   }
 
   onDelete(): void {
-    this.delete.emit(2);
+    this.delete.emit(this.item());
   }
 
   onTagInput(tag: string): void {

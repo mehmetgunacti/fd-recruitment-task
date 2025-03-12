@@ -50,7 +50,7 @@
                           [tagSuggestions]="tagSuggestions()"
                           (update)="onItemDetailUpdate($event)"
                           (cancel)="onItemDetailCancel()"
-                          (delete)="onItemDetailDelete()"
+                          (delete)="onItemDetailDelete($event)"
                           (tagInput)="onItemDetailTagInput($event)"/>
 
 </ng-template>

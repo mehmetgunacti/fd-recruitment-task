@@ -147,4 +147,23 @@ export class TodoEffects {
 
     );
 
+    deleteItemDetail$ = createEffect(
+
+        () => this.actions$.pipe(
+
+            ofType(todoActions.deleteItem),
+            exhaustMap(
+
+                ({ dto }) => this.itemsClient.delete(dto.id).pipe(
+
+                    map(() => todoActions.deleteItemSuccess({dto})),
+                    catchError((error) => of(todoActions.deleteItemFailure({ error: JSON.parse(error.response) })))
+
+                )
+            ),
+
+        )
+
+    );
+
 }

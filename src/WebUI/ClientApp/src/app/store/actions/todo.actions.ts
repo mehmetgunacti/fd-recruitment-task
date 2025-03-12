@@ -57,6 +57,11 @@ export const todoActions = createActionGroup({
         updateItemDetailSuccess  : props<{ dto: TodoItemDto }>(),
         updateItemDetailFailure  : props<{ error: string }>(),
 
+        // delete item dto
+        deleteItem         : props<{ dto: TodoItemDto }>(),
+        deleteItemSuccess  : props<{ dto: TodoItemDto }>(),
+        deleteItemFailure  : props<{ error: string }>()
+
     }
 
 });

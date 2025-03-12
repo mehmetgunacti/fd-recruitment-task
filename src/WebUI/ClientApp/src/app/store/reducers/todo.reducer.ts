@@ -148,6 +148,38 @@ const reducer = createReducer(
 	}),
 	on(todoActions.updateItemDetailFailure, (state, { error }): TodoModuleState => ({ ...state, error })),
 
+	on(todoActions.deleteItemSuccess, (state, { dto }): TodoModuleState => {
+
+		return produce(
+
+			state,
+			draft => {
+
+				const listId = dto.listId;
+				const listDto: TodoListDto = draft.entities[listId];
+				const items: TodoItemDto[] = listDto.items ?? [];
+
+				if (items.length) {
+
+					const curItems = items.filter(item => item.id !== dto.id);
+					draft.entities[listId] = TodoListDto.fromJS({
+						...listDto,
+						items: [...curItems]
+					});
+
+				} else
+					draft.entities[listId] = TodoListDto.fromJS({
+						...listDto,
+						items: []
+					});
+				draft.itemDetailFormVisible = false;
+
+			}
+
+		);
+
+	}),
+	on(todoActions.deleteItemFailure, (state, { error }): TodoModuleState => ({ ...state, error })),
 
 );
 
