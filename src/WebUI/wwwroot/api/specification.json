@@ -490,6 +490,16 @@
           "note": {
             "type": "string",
             "nullable": true
+          },
+          "bgColour": {
+            "type": "string",
+            "nullable": true
+          },
+          "tagList": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
@@ -591,6 +601,16 @@
           "note": {
             "type": "string",
             "nullable": true
+          },
+          "bgColour": {
+            "type": "string",
+            "nullable": true
+          },
+          "tagList": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },

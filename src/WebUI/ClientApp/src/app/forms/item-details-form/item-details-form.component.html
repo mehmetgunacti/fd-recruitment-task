@@ -1,0 +1,68 @@
+<!-- MODAL HEADER -->
+<div class="modal-header">
+    <h4 class="modal-title lh-sm">Item Details</h4>
+    <button type="button"
+            class="close btn-close"
+            aria-label="Close" 
+            (click)="onCancel()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+</div>
+
+<!-- MODAL BODY -->
+<div class="modal-body">
+    <form [formGroup]="fg" class="form">
+        <div class="form-group">
+            <label for="list">List</label>
+            <select class="form-control" formControlName="listId">
+
+                @for (title of listTitles(); track $index) {
+
+                    <option [ngValue]="title.id">{{ title.name }}</option>
+
+                }
+
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="priority">Priority</label>
+            <select class="form-control" formControlName="priority">
+
+                @for (level of priorityLevels(); track $index) {
+
+                    <option [ngValue]="level.value">{{ level.name }}</option>
+
+                }
+
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="note">Note</label>
+            <textarea id="note" class="form-control" rows="3" formControlName="note"></textarea>
+        </div>
+        <div class="form-group">
+
+            <label>Tags</label>
+            <app-tag-input  formControlName="tagList"
+                            [suggestions]="tagSuggestions()"
+                            (tagInput)="onTagInput($event)"/>
+
+        </div>
+        <div class="form-group">
+
+            <label for="note">Colour</label>
+            <app-colour-picker formControlName="bgColour" class="form-control"></app-colour-picker>
+
+        </div>
+    </form>
+
+</div>
+
+<!-- MODAL FOOTER -->
+<div class="modal-footer">
+
+    <app-countdown-button [time]="3" (done)="onDelete()"/>
+    <button class="btn btn-default ms-auto" (click)="onCancel()">Cancel</button>
+    <button class="btn btn-primary" (click)="onUpdate()">Update</button>
+
+</div>

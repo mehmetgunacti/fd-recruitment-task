@@ -18,9 +18,14 @@ public class TodoItemDto : IMapFrom<TodoItem>
 
     public string? Note { get; set; }
 
+    public string? BgColour { get; set; }
+
+    public string[] tagList { get; set; }
+
     public void Mapping(Profile profile)
     {
         profile.CreateMap<TodoItem, TodoItemDto>()
-            .ForMember(d => d.Priority, opt => opt.MapFrom(s => (int)s.Priority));
+            .ForMember(d => d.Priority, opt => opt.MapFrom(s => (int)s.Priority))
+            .ForMember(d => d.tagList, opt => opt.MapFrom(s => string.IsNullOrEmpty(s.Tags) ? Array.Empty<string>() : s.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries)));
     }
 }

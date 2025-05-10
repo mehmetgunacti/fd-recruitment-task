@@ -1,0 +1,68 @@
+import { createActionGroup, emptyProps, props } from '@ngrx/store';
+import { TodoItemDto, TodoListDto, TodosVm } from 'src/app/web-api-client';
+
+export const todoActions = createActionGroup({
+
+    source: 'Todo',
+    events: {
+
+        selectList      : props<{ id: number }>(),
+        selectTag       : props<{ tag: string | null }>(),
+        search          : props<{ searchTerm: string | null }>(),
+
+        // List Create Form
+        openListCreateForm : emptyProps(),
+        closeListCreateForm: emptyProps(),
+
+        // List Update Form
+        openListUpdateForm : emptyProps(),
+        closeListUpdateForm: emptyProps(),
+
+        // List Delete Form
+        openListDeleteForm : emptyProps(),
+        closeListDeleteForm: emptyProps(),
+
+        // Item Detail Form
+        openItemDetailForm : props<{ id: number }>(),
+        closeItemDetailForm: emptyProps(),
+
+        getLists        : emptyProps(),
+        getListsSuccess : props<{ vm: TodosVm }>(),
+        getListsFailure : props<{ error: string }>(),
+
+        // create list dto
+        addList         : props<{ title: string }>(),
+        addListSuccess  : props<{ dto: TodoListDto }>(),
+        addListFailure  : props<{ error: string }>(),
+
+        // update list dto
+        updateList         : props<{ id: number, title: string }>(),
+        updateListSuccess  : props<{ id: number, title: string }>(),
+        updateListFailure  : props<{ error: string }>(),
+
+        // delete list dto
+        deleteList         : props<{ id: number }>(),
+        deleteListSuccess  : props<{ id: number }>(),
+        deleteListFailure  : props<{ error: string }>(),
+
+        // add item dto
+        addItem         : props<{ listId: number, title: string }>(),
+        addItemSuccess  : props<{ listId: number, id: number, title: string }>(),
+        addItemFailure  : props<{ error: string }>(),
+
+        // update item dto (updates only title & done fields)
+        updateItem      : props<{ dto: TodoItemDto }>(),
+
+        // update item detail dto
+        updateItemDetail         : props<{ dto: TodoItemDto }>(),
+        updateItemDetailSuccess  : props<{ dto: TodoItemDto }>(),
+        updateItemDetailFailure  : props<{ error: string }>(),
+
+        // delete item dto
+        deleteItem         : props<{ dto: TodoItemDto }>(),
+        deleteItemSuccess  : props<{ dto: TodoItemDto }>(),
+        deleteItemFailure  : props<{ error: string }>()
+
+    }
+
+});
